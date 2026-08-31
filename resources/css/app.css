@@ -1,0 +1,117 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens for the Franchise/Admin web portal.
+ *
+ * Direction: clinical trust, not clinical coldness. Deep pharmacy-cross
+ * teal as the brand color, warm honey/amber (pill-bottle) for attention
+ * states, a cool light canvas instead of the generic warm-cream default.
+ * Space Grotesk carries UI chrome (enough character to not read as
+ * default-Bootstrap), Inter carries body/data text people read fast under
+ * time pressure, IBM Plex Mono is reserved specifically for batch numbers,
+ * SKUs and expiry dates - so a mono face always means "this is an exact
+ * code," never just a stylistic flourish.
+ *
+ * ("honey" rather than Tailwind's built-in "amber" name, so our specific
+ * shades don't get quietly mixed with Tailwind's default amber scale.)
+ *
+ * The signature thread running through the whole product: every batch/
+ * inventory reference gets a freshness indicator (fresh / approaching /
+ * urgent, derived from days-to-expiry). It shows up on stat cards, table
+ * rows and badges alike - see the .freshness-* utilities below - because
+ * FEFO/expiry is the one idea this entire business is built around, so it
+ * earns a consistent visual signal rather than being just another status
+ * color borrowed from a generic admin template.
+ */
+@theme {
+    --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+    --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+
+    --color-canvas: #F5F7F6;
+    --color-canvas-raised: #FFFFFF;
+    --color-ink: #132A2A;
+    --color-ink-muted: #4B615F;
+    --color-border: #DDE3E1;
+
+    --color-primary-50: #E4F0EC;
+    --color-primary-100: #C7E1D8;
+    --color-primary-500: #0E6B5C;
+    --color-primary-600: #0A4F45;
+    --color-primary-700: #073B34;
+
+    --color-honey-50: #F6E9D8;
+    --color-honey-100: #EDD3B0;
+    --color-honey-500: #B8752A;
+    --color-honey-600: #935C1F;
+
+    --color-danger-50: #F5E3E1;
+    --color-danger-500: #B13B3B;
+    --color-danger-600: #8E2E2E;
+
+    --color-success-50: #E4EFE7;
+    --color-success-500: #3F8F5F;
+    --color-success-600: #2F6E48;
+}
+
+@layer base {
+    body {
+        background-color: var(--color-canvas);
+        color: var(--color-ink);
+        font-family: var(--font-body);
+    }
+
+    h1, h2, h3, h4, .font-display {
+        font-family: var(--font-display);
+        letter-spacing: -0.01em;
+    }
+
+    .font-code {
+        font-family: var(--font-mono);
+        font-variant-numeric: tabular-nums;
+    }
+
+    /* Required for Alpine's x-cloak - without this rule, x-cloak elements
+       flash visible for a moment before Alpine finishes initializing. */
+    [x-cloak] {
+        display: none !important;
+    }
+
+    /* Visible keyboard focus everywhere - never suppressed. */
+    :focus-visible {
+        outline: 2px solid var(--color-primary-500);
+        outline-offset: 2px;
+    }
+}
+
+@layer components {
+    /* The expiry-urgency signature: a left-border + dot pairing used on
+       inventory rows, batch chips and dashboard alert cards. */
+    .freshness-ok {
+        border-left-color: var(--color-success-500);
+    }
+    .freshness-ok .freshness-dot {
+        background-color: var(--color-success-500);
+    }
+
+    .freshness-approaching {
+        border-left-color: var(--color-honey-500);
+    }
+    .freshness-approaching .freshness-dot {
+        background-color: var(--color-honey-500);
+    }
+
+    .freshness-urgent {
+        border-left-color: var(--color-danger-500);
+    }
+    .freshness-urgent .freshness-dot {
+        background-color: var(--color-danger-500);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        transition-duration: 0.001ms !important;
+    }
+}
