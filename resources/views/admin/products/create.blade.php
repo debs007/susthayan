@@ -6,7 +6,7 @@
 
     <x-form.errors />
 
-    <form method="POST" action="{{ route('admin.products.store') }}" class="max-w-2xl space-y-10 rounded-xl border border-border bg-canvas-raised p-8">
+    <form method="POST" action="{{ route('admin.products.store') }}" enctype="multipart/form-data" class="max-w-2xl space-y-10 rounded-xl border border-border bg-canvas-raised p-8">
         @csrf
 
         <div>
@@ -16,6 +16,7 @@
                     <x-form.field name="name" label="Product name" required />
                 </div>
                 <x-form.select name="category_id" label="Category" placeholder="No category" :options="$categories->pluck('name', 'id')" />
+                <x-form.select name="brand_id" label="Brand" placeholder="No brand" :options="$brands->pluck('name', 'id')" />
                 <x-form.field name="manufacturer" label="Manufacturer" />
                 <div class="col-span-2">
                     <x-form.field name="salt_composition" label="Salt composition" />
@@ -46,6 +47,11 @@
                 <x-form.field name="barcode" label="Barcode" />
                 <div class="col-span-2">
                     <x-form.textarea name="description" label="Description" :rows="3" />
+                </div>
+                <div class="col-span-2">
+                    <label for="image" class="block text-sm font-medium text-ink">Product photo</label>
+                    <input type="file" name="image" id="image" accept="image/jpeg,image/png,image/webp" class="mt-1.5 block w-full text-sm text-ink-muted file:mr-3 file:rounded-lg file:border-0 file:bg-primary-500 file:px-3 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-primary-600">
+                    <p class="mt-1.5 text-xs text-ink-muted">Optional - JPG, PNG, or WebP, min 200x200px, up to 4MB. Can also be added later from the edit page.</p>
                 </div>
             </div>
         </div>

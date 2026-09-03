@@ -26,6 +26,7 @@
                             <x-form.field name="name" label="Product name" :value="$product->name" required />
                         </div>
                         <x-form.select name="category_id" label="Category" placeholder="No category" :value="$product->category_id" :options="$categories->pluck('name', 'id')" />
+                        <x-form.select name="brand_id" label="Brand" placeholder="No brand" :value="$product->brand_id" :options="$brands->pluck('name', 'id')" />
                         <x-form.field name="manufacturer" label="Manufacturer" :value="$product->manufacturer" />
                         <div class="col-span-2">
                             <x-form.field name="salt_composition" label="Salt composition" :value="$product->salt_composition" />
@@ -71,6 +72,34 @@
         </div>
 
         <div class="space-y-6">
+            <div class="rounded-xl border border-border bg-canvas-raised p-5">
+                <h2 class="mb-4 font-display font-semibold">Product photo</h2>
+                @if ($product->image_url)
+                    <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="mb-4 h-40 w-full rounded-lg border border-border object-contain bg-canvas p-2">
+                @else
+                    <div class="mb-4 flex h-40 items-center justify-center rounded-lg border border-dashed border-border text-sm text-ink-muted">
+                        No photo yet
+                    </div>
+                @endif
+                <form method="POST" action="{{ route('admin.products.image.upload', $product) }}" enctype="multipart/form-data" class="space-y-3">
+                    @csrf
+                    <input type="file" name="image" accept="image/jpeg,image/png,image/webp" required class="block w-full text-sm text-ink-muted file:mr-3 file:rounded-lg file:border-0 file:bg-primary-500 file:px-3 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-primary-600">
+                    <p class="text-xs text-ink-muted">JPG, PNG, or WebP - min 200x200px, up to 4MB.</p>
+                    <button type="submit" class="w-full rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white hover:bg-primary-600">
+                        {{ $product->image_url ? 'Replace photo' : 'Upload photo' }}
+                    </button>
+                </form>
+                @if ($product->image_url)
+                    <form method="POST" action="{{ route('admin.products.image.remove', $product) }}" class="mt-2">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="w-full rounded-lg border border-border px-4 py-2 text-sm font-medium text-ink-muted hover:bg-canvas" onclick="return confirm('Remove this photo?')">
+                            Remove photo
+                        </button>
+                    </form>
+                @endif
+            </div>
+
             <div class="rounded-xl border border-border bg-canvas-raised">
                 <div class="border-b border-border px-5 py-4">
                     <h2 class="font-display font-semibold">Prices on file</h2>

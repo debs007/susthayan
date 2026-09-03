@@ -18,8 +18,8 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, HasRoles, LogsActivity, Notifiable, SoftDeletes;
 
     protected $fillable = [
-        'franchise_id', 'name', 'mobile', 'email', 'password',
-        'two_factor_enabled', 'is_active',
+        'franchise_id', 'name', 'mobile', 'alternate_mobile', 'email', 'password',
+        'profile_image_path', 'two_factor_enabled', 'is_active',
     ];
 
     protected $hidden = [
@@ -37,6 +37,18 @@ class User extends Authenticatable
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()->logOnlyDirty()->logExcept(['password', 'remember_token']);
+    }
+
+    /** Same pattern as Product::getImageUrlAttribute() - computed from the stored R2 key, never null-unsafe. */
+    public function getProfileImageUrlAttribute(): ?string
+    {
+        if ($this->profile_image_path === null) {
+            return null;
+        }
+
+        $base = rtrim(config('filesystems.disks.r2.url', ''), '/');
+
+        return $base !== '' ? "{$base}/{$this->profile_image_path}" : null;
     }
 
     public function franchise(): BelongsTo

@@ -17,6 +17,7 @@ class UpdateProductRequest extends FormRequest
         return [
             'name' => ['sometimes', 'string', 'max:255'],
             'category_id' => ['sometimes', 'nullable', 'integer', 'exists:categories,id'],
+            'brand_id' => ['sometimes', 'nullable', 'integer', 'exists:brands,id'],
             'salt_composition' => ['sometimes', 'nullable', 'string', 'max:255'],
             'manufacturer' => ['sometimes', 'nullable', 'string', 'max:255'],
             'hsn_code' => ['sometimes', 'nullable', 'string', 'max:20'],

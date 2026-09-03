@@ -45,7 +45,16 @@ class LoginController extends Controller
         }
 
         if ($user->hasRole('Super Admin') || $user->two_factor_enabled) {
-            $this->otp->issue($user->mobile, OtpPurpose::TwoFactor);
+            $code = $this->otp->issue($user->mobile, OtpPurpose::TwoFactor);
+
+            // Structural gate, not just a flag someone has to remember to
+            // flip off - this branch is only reachable at all when no real
+            // SMS is being sent anywhere, so it can't leak into production
+            // by accident the way a separate config toggle could.
+            if (config('services.sms.provider') === 'log') {
+                $request->session()->put('dev_otp_autofill', $code);
+            }
+
             $request->session()->put('2fa_user_id', $user->id);
 
             return redirect()->route('two-factor.show');
@@ -63,7 +72,7 @@ class LoginController extends Controller
             return redirect()->route('login');
         }
 
-        return view('auth.two-factor');
+        return view('auth.two-factor', ['devOtpAutofill' => $request->session()->get('dev_otp_autofill')]);
     }
 
     public function verifyTwoFactor(Request $request): RedirectResponse
@@ -83,6 +92,7 @@ class LoginController extends Controller
         }
 
         $request->session()->forget('2fa_user_id');
+        $request->session()->forget('dev_otp_autofill');
         Auth::guard('web')->login($user, remember: true);
         $request->session()->regenerate();
 
@@ -113,7 +123,11 @@ class LoginController extends Controller
             ->first();
 
         if ($user) {
-            $this->otp->issue($mobile, OtpPurpose::PasswordReset);
+            $code = $this->otp->issue($mobile, OtpPurpose::PasswordReset);
+
+            if (config('services.sms.provider') === 'log') {
+                $request->session()->put('dev_otp_autofill', $code);
+            }
         }
 
         $request->session()->put('password_reset_mobile', $mobile);
@@ -128,7 +142,7 @@ class LoginController extends Controller
             return redirect()->route('forgot-password.show');
         }
 
-        return view('auth.reset-password');
+        return view('auth.reset-password', ['devOtpAutofill' => $request->session()->get('dev_otp_autofill')]);
     }
 
     public function resetPassword(ResetPasswordRequest $request): RedirectResponse
@@ -154,6 +168,7 @@ class LoginController extends Controller
 
         $user->update(['password' => Hash::make($request->validated('password'))]);
         $request->session()->forget('password_reset_mobile');
+        $request->session()->forget('dev_otp_autofill');
 
         return redirect()->route('login')->with('success', 'Password reset - you can log in with your new password now.');
     }

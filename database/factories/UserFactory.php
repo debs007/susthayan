@@ -17,11 +17,13 @@ class UserFactory extends Factory
 
     public function definition(): array
     {
+        $faker = \Faker\Factory::create();
+
         return [
             'franchise_id' => null,
-            'name' => fake()->name(),
-            'mobile' => fake()->unique()->numerify('9#########'), // 10 digits, starts 9
-            'email' => fake()->unique()->safeEmail(),
+            'name' => $faker->name(),
+            'mobile' => $faker->unique()->numerify('9#########'), // 10 digits, starts 9
+            'email' => $faker->unique()->safeEmail(),
             'email_verified_at' => now(),
             'mobile_verified_at' => now(),
             'password' => Hash::make('password'), // override in tests/seeders as needed

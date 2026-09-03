@@ -27,6 +27,9 @@
         'Admin' => [
             ['label' => 'Franchises', 'route' => 'admin.franchises.index', 'active' => 'admin.franchises.*', 'live' => true],
             ['label' => 'Catalogue', 'route' => 'admin.products.index', 'active' => 'admin.products.*|admin.categories.*', 'live' => true],
+            ['label' => 'Brands', 'route' => 'admin.brands.index', 'active' => 'admin.brands.*', 'live' => true],
+            ['label' => 'Lab Tests', 'route' => 'admin.lab-tests.index', 'active' => 'admin.lab-tests.*|admin.lab-test-categories.*|admin.lab-test-blocked-dates.*', 'live' => true],
+            ['label' => 'Home Banners', 'route' => 'admin.home-banners.index', 'active' => 'admin.home-banners.*', 'live' => true],
             ['label' => 'Suppliers & PO', 'route' => 'admin.vendors.index', 'active' => 'admin.vendors.*', 'live' => true],
         ],
         'Finance' => [
@@ -75,7 +78,7 @@
                         <p class="px-3 pb-1.5 text-[11px] font-semibold uppercase tracking-wider text-white/40">{{ $heading }}</p>
                         <div class="space-y-0.5">
                             @foreach ($items as $item)
-                                @if ($item['live'])
+                                @if ($item['live'] && Route::has($item['route']))
                                     <a
                                         href="{{ route($item['route']) }}"
                                         class="flex items-center rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs($item['active'] ?? $item['route']) ? 'bg-primary-600 text-white' : 'text-white/75 hover:bg-primary-600/60 hover:text-white' }}"

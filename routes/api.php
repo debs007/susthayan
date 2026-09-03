@@ -14,7 +14,14 @@ use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\Auth\CustomerAuthController;
 use App\Http\Controllers\Api\Auth\StaffAuthController;
 use App\Http\Controllers\Api\Customer\AddressController;
+use App\Http\Controllers\Api\Customer\BrandController as CustomerBrandController;
 use App\Http\Controllers\Api\Customer\CartController;
+use App\Http\Controllers\Api\Customer\FranchiseController as CustomerFranchiseController;
+use App\Http\Controllers\Api\Customer\HealthController;
+use App\Http\Controllers\Api\Customer\HomeBannerController as CustomerHomeBannerController;
+use App\Http\Controllers\Api\Customer\LabTestBookingController;
+use App\Http\Controllers\Api\Customer\LabTestController as CustomerLabTestController;
+use App\Http\Controllers\Api\Customer\NotificationController;
 use App\Http\Controllers\Api\Customer\OrderController;
 use App\Http\Controllers\Api\Customer\PaymentController;
 use App\Http\Controllers\Api\Customer\PrescriptionController;
@@ -73,6 +80,23 @@ Route::prefix('customer')->middleware(['auth:sanctum', 'role:Customer'])->group(
     Route::post('/addresses', [AddressController::class, 'store']);
     Route::delete('/addresses/{address}', [AddressController::class, 'destroy']);
 
+    // The endpoint that was missing this whole build - without this, a
+    // customer's cart could never resolve a franchise_id, which blocked
+    // checkout from ever completing end-to-end.
+    Route::get('/franchises', [CustomerFranchiseController::class, 'index']);
+
+    Route::patch('/profile', [AuthController::class, 'updateProfile']);
+
+    Route::get('/brands', [CustomerBrandController::class, 'index']);
+
+    Route::get('/home-banners', [CustomerHomeBannerController::class, 'index']);
+
+    Route::get('/lab-tests', [CustomerLabTestController::class, 'index']);
+    Route::get('/lab-tests/blocked-dates', [CustomerLabTestController::class, 'blockedDates']);
+    Route::get('/lab-tests/{labTest}', [CustomerLabTestController::class, 'show']);
+    Route::post('/lab-test-bookings', [LabTestBookingController::class, 'store']);
+    Route::get('/lab-test-bookings', [LabTestBookingController::class, 'index']);
+
     Route::get('/products', [ProductController::class, 'index']);
     Route::get('/products/{product}', [ProductController::class, 'show']);
 
@@ -93,6 +117,26 @@ Route::prefix('customer')->middleware(['auth:sanctum', 'role:Customer'])->group(
     Route::get('/orders/{order}/refunds', [RefundController::class, 'index']);
 
     Route::post('/payments/verify', [PaymentController::class, 'verify']);
+
+    // Health Records - profile, self-reported vitals, and records (lab
+    // reports/documents/vaccinations/checkups). The records list also
+    // merges in real Prescription data server-side, so there's one source
+    // of truth for prescriptions rather than a duplicate copy.
+    Route::prefix('health')->group(function () {
+        Route::get('/profile', [HealthController::class, 'showProfile']);
+        Route::put('/profile', [HealthController::class, 'updateProfile']);
+        Route::get('/vitals', [HealthController::class, 'indexVitals']);
+        Route::post('/vitals', [HealthController::class, 'storeVitals']);
+        Route::get('/records', [HealthController::class, 'indexRecords']);
+        Route::post('/records', [HealthController::class, 'storeRecord']);
+        Route::get('/records/{healthRecord}/file', [HealthController::class, 'showRecordFile']);
+    });
+
+    // Notifications - in-app only. No Firebase Cloud Messaging/push
+    // integration exists; this is read/unread state for the in-app list.
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::post('/notifications/{notification}/read', [NotificationController::class, 'markRead']);
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllRead']);
 });
 
 // 2. Franchise Portal - Franchise Owner, Franchise Staff, Pharmacist share this

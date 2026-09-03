@@ -1,9 +1,14 @@
 <?php
 
 use App\Http\Controllers\Web\Admin\AuditLogController;
+use App\Http\Controllers\Web\Admin\BrandController;
 use App\Http\Controllers\Web\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Web\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Web\Admin\FranchiseController as AdminFranchiseController;
+use App\Http\Controllers\Web\Admin\HomeBannerController;
+use App\Http\Controllers\Web\Admin\LabTestBlockedDateController;
+use App\Http\Controllers\Web\Admin\LabTestCategoryController;
+use App\Http\Controllers\Web\Admin\LabTestController;
 use App\Http\Controllers\Web\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Web\Admin\ReportController as AdminReportController;
 use App\Http\Controllers\Web\Admin\SettlementController as AdminSettlementController;
@@ -16,6 +21,7 @@ use App\Http\Controllers\Web\Franchise\InventoryController;
 use App\Http\Controllers\Web\Franchise\OrderController;
 use App\Http\Controllers\Web\Franchise\PosController;
 use App\Http\Controllers\Web\Franchise\PrescriptionController;
+use App\Http\Controllers\Web\Franchise\ProductImageController;
 use App\Http\Controllers\Web\Franchise\PurchaseOrderController;
 use App\Http\Controllers\Web\Franchise\SettlementController as FranchiseSettlementController;
 use App\Http\Controllers\Web\LoginController;
@@ -76,6 +82,18 @@ Route::middleware('auth:web')->group(function () {
 
             Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
 
+            // Owner-only, same separation as PO approval below - product
+            // catalog changes (even just a photo) have consistently been an
+            // ownership-level action in this app, not shared with Staff/
+            // Pharmacist. Products are a single shared catalog (no
+            // franchise_id on the products table) - an image uploaded here
+            // is visible to every franchise's customers, not just this one.
+            Route::middleware('role:Franchise Owner')->group(function () {
+                Route::get('/products/{product}/image', [ProductImageController::class, 'edit'])->name('products.image.edit');
+                Route::post('/products/{product}/image', [ProductImageController::class, 'upload'])->name('products.image.upload');
+                Route::delete('/products/{product}/image', [ProductImageController::class, 'remove'])->name('products.image.remove');
+            });
+
             // role:Pharmacist further narrows verification specifically -
             // Franchise Staff can see orders/POS/inventory but shouldn't
             // be the one clearing a prescription, same separation the API
@@ -123,6 +141,31 @@ Route::middleware('auth:web')->group(function () {
             Route::get('/products/{product}/edit', [AdminProductController::class, 'edit'])->name('products.edit');
             Route::patch('/products/{product}', [AdminProductController::class, 'update'])->name('products.update');
             Route::post('/products/{product}/prices', [AdminProductController::class, 'storePrice'])->name('products.prices.store');
+            Route::post('/products/{product}/image', [AdminProductController::class, 'uploadImage'])->name('products.image.upload');
+            Route::delete('/products/{product}/image', [AdminProductController::class, 'removeImage'])->name('products.image.remove');
+
+            Route::get('/brands', [BrandController::class, 'index'])->name('brands.index');
+            Route::post('/brands', [BrandController::class, 'store'])->name('brands.store');
+            Route::patch('/brands/{brand}/toggle-active', [BrandController::class, 'toggleActive'])->name('brands.toggle-active');
+
+            Route::get('/lab-test-categories', [LabTestCategoryController::class, 'index'])->name('lab-test-categories.index');
+            Route::post('/lab-test-categories', [LabTestCategoryController::class, 'store'])->name('lab-test-categories.store');
+
+            Route::get('/lab-tests', [LabTestController::class, 'index'])->name('lab-tests.index');
+            Route::get('/lab-tests/create', [LabTestController::class, 'create'])->name('lab-tests.create');
+            Route::post('/lab-tests', [LabTestController::class, 'store'])->name('lab-tests.store');
+            Route::get('/lab-tests/{labTest}/edit', [LabTestController::class, 'edit'])->name('lab-tests.edit');
+            Route::patch('/lab-tests/{labTest}', [LabTestController::class, 'update'])->name('lab-tests.update');
+            Route::patch('/lab-tests/{labTest}/toggle-active', [LabTestController::class, 'toggleActive'])->name('lab-tests.toggle-active');
+
+            Route::get('/lab-test-blocked-dates', [LabTestBlockedDateController::class, 'index'])->name('lab-test-blocked-dates.index');
+            Route::post('/lab-test-blocked-dates', [LabTestBlockedDateController::class, 'store'])->name('lab-test-blocked-dates.store');
+            Route::delete('/lab-test-blocked-dates/{labTestBlockedDate}', [LabTestBlockedDateController::class, 'destroy'])->name('lab-test-blocked-dates.destroy');
+
+            Route::get('/home-banners', [HomeBannerController::class, 'index'])->name('home-banners.index');
+            Route::post('/home-banners', [HomeBannerController::class, 'store'])->name('home-banners.store');
+            Route::patch('/home-banners/{homeBanner}/toggle-active', [HomeBannerController::class, 'toggleActive'])->name('home-banners.toggle-active');
+            Route::delete('/home-banners/{homeBanner}', [HomeBannerController::class, 'destroy'])->name('home-banners.destroy');
 
             Route::get('/vendors', [AdminSupplierController::class, 'index'])->name('vendors.index');
             Route::get('/vendors/create', [AdminSupplierController::class, 'create'])->name('vendors.create');

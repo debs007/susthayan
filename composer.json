@@ -7,15 +7,16 @@
     "require": {
         "php": "^8.4",
         "laravel/framework": "^13.0",
-        "laravel/sanctum": "^4.0",
         "laravel/reverb": "^1.0",
+        "laravel/sanctum": "^4.0",
         "laravel/tinker": "^3.0",
+        "league/flysystem-aws-s3-v3": "^3.0",
         "razorpay/razorpay": "^2.9",
-        "spatie/laravel-permission": "^8.0",
-        "spatie/laravel-activitylog": "^5.0"
+        "spatie/laravel-activitylog": "^5.0",
+        "spatie/laravel-permission": "^8.0"
     },
     "require-dev": {
-        "fakerphp/faker": "^1.23",
+        "fakerphp/faker": "^1.24",
         "laravel/pint": "^1.13",
         "laravel/sail": "^1.26",
         "mockery/mockery": "^1.6",

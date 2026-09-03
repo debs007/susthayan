@@ -17,6 +17,7 @@
         <table class="w-full text-sm">
             <thead>
                 <tr class="text-left text-xs uppercase tracking-wide text-ink-muted">
+                    <th class="px-5 py-3 font-medium">Photo</th>
                     <th class="px-5 py-3 font-medium">Product</th>
                     <th class="px-5 py-3 font-medium">Batch</th>
                     <th class="px-5 py-3 font-medium">Expiry</th>
@@ -28,6 +29,15 @@
             <tbody class="divide-y divide-border">
                 @forelse ($batches as $batch)
                     <tr class="freshness-{{ $batch->freshness }} border-l-4">
+                        <td class="px-5 py-3">
+                            <a href="{{ route('franchise.products.image.edit', $batch->product) }}" class="block h-10 w-10 overflow-hidden rounded-lg border border-border bg-canvas">
+                                @if ($batch->product->image_url)
+                                    <img src="{{ $batch->product->image_url }}" alt="" class="h-full w-full object-contain">
+                                @else
+                                    <span class="flex h-full w-full items-center justify-center text-[10px] text-ink-muted">Add</span>
+                                @endif
+                            </a>
+                        </td>
                         <td class="px-5 py-3 font-medium">{{ $batch->product->name }}</td>
                         <td class="px-5 py-3 font-code text-xs text-ink-muted">{{ $batch->batch_no }}</td>
                         <td class="px-5 py-3">
@@ -43,7 +53,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="px-5 py-12 text-center text-ink-muted">No stock on hand.</td>
+                        <td colspan="7" class="px-5 py-12 text-center text-ink-muted">No stock on hand.</td>
                     </tr>
                 @endforelse
             </tbody>

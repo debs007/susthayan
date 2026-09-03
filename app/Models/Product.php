@@ -12,9 +12,9 @@ class Product extends Model
     use HasFactory;
 
     protected $fillable = [
-        'category_id', 'name', 'slug', 'salt_composition', 'manufacturer',
+        'category_id', 'brand_id', 'name', 'slug', 'salt_composition', 'manufacturer',
         'hsn_code', 'drug_schedule', 'prescription_required', 'unit',
-        'barcode', 'description', 'is_active',
+        'barcode', 'image_path', 'description', 'is_active',
     ];
 
     protected $casts = [
@@ -25,6 +25,11 @@ class Product extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function brand(): BelongsTo
+    {
+        return $this->belongsTo(Brand::class);
     }
 
     public function prices(): HasMany
@@ -62,5 +67,25 @@ class Product extends Model
 
         return $this->prices()->where('franchise_id', $franchiseId)->first()
             ?? $this->prices()->whereNull('franchise_id')->first();
+    }
+
+    /**
+     * Full public URL, computed from the stored R2 object key - never
+     * null-unsafe (returns null if no image was ever uploaded, which the
+     * customer-facing ProductResource and the Flutter app's fallback
+     * image system both already handle). config('filesystems.disks.r2.url')
+     * is the public base URL (custom domain or r2.dev subdomain), kept
+     * separate from the S3 API endpoint used for uploads - see
+     * MANUAL_STEPS_README.md for why these are two different values.
+     */
+    public function getImageUrlAttribute(): ?string
+    {
+        if ($this->image_path === null) {
+            return null;
+        }
+
+        $base = rtrim(config('filesystems.disks.r2.url', ''), '/');
+
+        return $base !== '' ? "{$base}/{$this->image_path}" : null;
     }
 }
