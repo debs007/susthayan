@@ -34,6 +34,7 @@ class ProductController extends Controller
                 });
             })
             ->when($request->filled('category_id'), fn ($query) => $query->where('category_id', $request->integer('category_id')))
+            ->when($request->filled('brand_id'), fn ($query) => $query->where('brand_id', $request->integer('brand_id')))
             ->when($request->query('sort') === 'latest', fn ($query) => $query->latest('id'), fn ($query) => $query->orderBy('name'))
             ->paginate($request->integer('per_page') ?: 20);
 

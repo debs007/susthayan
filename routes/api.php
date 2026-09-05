@@ -23,6 +23,7 @@ use App\Http\Controllers\Api\Customer\DoctorController as CustomerDoctorControll
 use App\Http\Controllers\Api\Customer\FranchiseController as CustomerFranchiseController;
 use App\Http\Controllers\Api\Customer\HealthArticleController;
 use App\Http\Controllers\Api\Customer\HealthController;
+use App\Http\Controllers\Api\Customer\WalletController;
 use App\Http\Controllers\Api\Customer\HomeBannerController as CustomerHomeBannerController;
 use App\Http\Controllers\Api\Customer\LabTestBookingController;
 use App\Http\Controllers\Api\Customer\LabTestController as CustomerLabTestController;
@@ -107,6 +108,9 @@ Route::prefix('customer')->middleware(['auth:sanctum', 'role:Customer'])->group(
     Route::post('/appointment-bookings', [AppointmentBookingController::class, 'store']);
     Route::get('/appointment-bookings', [AppointmentBookingController::class, 'index']);
 
+    Route::get('/wallet', [WalletController::class, 'show']);
+    Route::post('/wallet/topup', [WalletController::class, 'topup']);
+
     Route::get('/lab-tests', [CustomerLabTestController::class, 'index']);
     Route::get('/lab-tests/blocked-dates', [CustomerLabTestController::class, 'blockedDates']);
     Route::get('/lab-tests/{labTest}', [CustomerLabTestController::class, 'show']);
@@ -146,9 +150,11 @@ Route::prefix('customer')->middleware(['auth:sanctum', 'role:Customer'])->group(
         Route::put('/profile', [HealthController::class, 'updateProfile']);
         Route::get('/vitals', [HealthController::class, 'indexVitals']);
         Route::post('/vitals', [HealthController::class, 'storeVitals']);
+        Route::delete('/vitals/{vital}', [HealthController::class, 'destroyVitals']);
         Route::get('/records', [HealthController::class, 'indexRecords']);
         Route::post('/records', [HealthController::class, 'storeRecord']);
         Route::get('/records/{healthRecord}/file', [HealthController::class, 'showRecordFile']);
+        Route::delete('/records/{healthRecord}', [HealthController::class, 'destroyRecord']);
     });
 
     // Notifications - in-app only. No Firebase Cloud Messaging/push

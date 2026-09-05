@@ -9,6 +9,7 @@ use App\Events\OrderStatusUpdated;
 use App\Exceptions\InsufficientStockException;
 use App\Models\CustomerPayment;
 use App\Services\Inventory\StockService;
+use App\Services\Wallet\WalletService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -20,7 +21,10 @@ use Illuminate\Support\Facades\Log;
  */
 class PaymentConfirmationService
 {
-    public function __construct(private readonly StockService $stock) {}
+    public function __construct(
+        private readonly StockService $stock,
+        private readonly WalletService $wallet,
+    ) {}
 
     public function markSuccessful(CustomerPayment $payment, ?string $gatewayPaymentId = null, ?string $method = null): void
     {
@@ -56,6 +60,14 @@ class PaymentConfirmationService
             }
 
             $order->update(['status' => OrderStatus::Confirmed, 'confirmed_at' => now()]);
+
+            // A wallet top-up is a real Order under the hood (same reason
+            // lab test bookings and appointments are too) - this is the
+            // one extra step specific to that order_type: the payment
+            // succeeding is what actually credits the balance.
+            if ($order->order_type === 'wallet_topup') {
+                $this->wallet->credit($order->user, (float) $order->total_amount, 'Wallet top-up', $order);
+            }
 
             OrderStatusUpdated::dispatch($order);
             NewOrderPlaced::dispatch($order);

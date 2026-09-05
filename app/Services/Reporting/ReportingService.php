@@ -37,7 +37,7 @@ class ReportingService
                 'date' => $order->delivered_at->toDateString(),
                 'order_id' => (string) $order->id,
                 'invoice_number' => $order->invoice?->invoice_number ?? '',
-                'franchise' => $order->franchise->name,
+                'franchise' => $order->franchise?->name ?? 'N/A',
                 'channel' => $order->fulfillment_type->value,
                 'subtotal' => (string) $order->subtotal_amount,
                 'tax' => (string) $order->tax_amount,
@@ -109,7 +109,7 @@ class ReportingService
             ->get(['id', 'franchise_id', 'status', 'total_amount', 'created_at'])
             ->map(fn (Order $order) => [
                 'order_id' => $order->id,
-                'franchise' => $order->franchise->name,
+                'franchise' => $order->franchise?->name ?? 'N/A',
                 'status' => $order->status->value,
                 'total_amount' => (string) $order->total_amount,
                 'placed_at' => $order->created_at->toIso8601String(),
@@ -121,7 +121,7 @@ class ReportingService
             ->get(['id', 'franchise_id', 'status', 'total_amount', 'created_at'])
             ->map(fn (Order $order) => [
                 'order_id' => $order->id,
-                'franchise' => $order->franchise->name,
+                'franchise' => $order->franchise?->name ?? 'N/A',
                 'total_amount' => (string) $order->total_amount,
                 'placed_at' => $order->created_at->toIso8601String(),
             ]);

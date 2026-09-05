@@ -183,6 +183,14 @@
 <?php endif; ?>
                 </div>
             </div>
+
+            <label class="mt-4 flex items-start gap-3 rounded-lg border border-border p-4">
+                <input type="checkbox" name="is_global" value="1" class="mt-0.5 h-4 w-4 rounded border-border text-primary-500 focus:ring-primary-500">
+                <span>
+                    <span class="block text-sm font-medium text-ink">Show on the app's Offers page</span>
+                    <span class="block text-xs text-ink-muted">A global coupon is browsable by any customer on the general Offers/Coupons page, not just reachable via a specific banner link. Leave unchecked for a coupon that should only appear when linked from a Home Banner.</span>
+                </span>
+            </label>
         </div>
 
         <div>

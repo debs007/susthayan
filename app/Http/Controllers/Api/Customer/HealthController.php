@@ -58,6 +58,15 @@ class HealthController extends Controller
         return response()->json(['vital' => new VitalResource($vital)], 201);
     }
 
+    public function destroyVitals(Request $request, Vital $vital): JsonResponse
+    {
+        abort_if($vital->user_id !== $request->user()->id, 403);
+
+        $vital->delete();
+
+        return response()->json(['message' => 'Deleted.']);
+    }
+
     /**
      * Merges the new health_records table with real Prescription data
      * into one chronological list - prescriptions were never duplicated
@@ -123,5 +132,27 @@ class HealthController extends Controller
         abort_unless(Storage::disk('local')->exists($healthRecord->file_path), 404);
 
         return response()->file(Storage::disk('local')->path($healthRecord->file_path));
+    }
+
+    /**
+     * Scoped to real HealthRecord rows only - indexRecords() also merges
+     * in Prescription entries under the same "record" shape (with a
+     * composite id like "prescription-5"), but those are a completely
+     * separate model with their own lifecycle and aren't deletable
+     * through this endpoint at all - the route parameter binding itself
+     * already enforces this, since a "prescription-5" id could never
+     * resolve to a real HealthRecord row.
+     */
+    public function destroyRecord(Request $request, HealthRecord $healthRecord): JsonResponse
+    {
+        abort_if($healthRecord->user_id !== $request->user()->id, 403);
+
+        if ($healthRecord->file_path !== null) {
+            Storage::disk('local')->delete($healthRecord->file_path);
+        }
+
+        $healthRecord->delete();
+
+        return response()->json(['message' => 'Deleted.']);
     }
 }

@@ -50,7 +50,7 @@
                             <tr>
                                 <td class="px-5 py-3 font-code text-xs font-medium">#HP-{{ $order->id }}</td>
                                 <td class="px-5 py-3">{{ $order->user?->name ?? $order->walk_in_customer_name ?? 'Walk-in' }}</td>
-                                <td class="px-5 py-3 text-ink-muted">{{ $order->franchise->name }}</td>
+                                <td class="px-5 py-3 text-ink-muted">{{ $order->franchise?->name ?? '—' }}</td>
                                 <td class="px-5 py-3 text-right font-code text-xs">₹{{ number_format($order->total_amount, 2) }}</td>
                                 <td class="px-5 py-3">
                                     <span class="rounded-full bg-canvas px-2 py-0.5 text-xs font-medium capitalize text-ink-muted">{{ str_replace('_', ' ', $order->status->value) }}</span>

@@ -15,10 +15,10 @@ class OrderResource extends JsonResource
             'order_type' => $this->order_type,
             'status' => $this->status->value,
             'fulfillment_type' => $this->fulfillment_type->value,
-            'franchise' => $this->whenLoaded('franchise', fn () => [
+            'franchise' => $this->whenLoaded('franchise', fn () => $this->franchise ? [
                 'id' => $this->franchise->id,
                 'name' => $this->franchise->name,
-            ]),
+            ] : null),
             'customer' => $this->fulfillment_type->value === 'pos' ? [
                 'walk_in_name' => $this->walk_in_customer_name,
                 'walk_in_phone' => $this->walk_in_customer_phone,
