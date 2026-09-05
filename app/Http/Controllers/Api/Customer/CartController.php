@@ -7,6 +7,7 @@ use App\Http\Requests\Customer\AddCartItemRequest;
 use App\Http\Requests\Customer\UpdateCartItemRequest;
 use App\Models\Cart;
 use App\Models\CartItem;
+use App\Models\Coupon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -70,6 +71,43 @@ class CartController extends Controller
         return $this->cartResponse($cart);
     }
 
+    /**
+     * Validates the code is real, currently valid, and actually applies
+     * to at least one product in the cart before attaching it - a coupon
+     * that discounts nothing shouldn't silently "apply" and confuse the
+     * customer about why their total didn't change.
+     */
+    public function applyCoupon(Request $request): JsonResponse
+    {
+        $request->validate(['code' => ['required', 'string']]);
+
+        $cart = $this->cartFor($request);
+        $coupon = Coupon::where('code', strtoupper($request->string('code')))->first();
+
+        if (! $coupon || ! $coupon->isCurrentlyValid()) {
+            return response()->json(['message' => 'That coupon code is invalid or has expired.'], 422);
+        }
+
+        $cart->update(['coupon_id' => $coupon->id]);
+        $cart->refresh();
+
+        if ($cart->couponDiscountAmount() <= 0) {
+            $cart->update(['coupon_id' => null]);
+
+            return response()->json(['message' => 'This coupon doesn\'t apply to anything currently in your cart.'], 422);
+        }
+
+        return $this->cartResponse($cart);
+    }
+
+    public function removeCoupon(Request $request): JsonResponse
+    {
+        $cart = $this->cartFor($request);
+        $cart->update(['coupon_id' => null]);
+
+        return $this->cartResponse($cart);
+    }
+
     private function cartFor(Request $request): Cart
     {
         return Cart::firstOrCreate(['user_id' => $request->user()->id]);
@@ -82,7 +120,7 @@ class CartController extends Controller
 
     private function cartResponse(Cart $cart): JsonResponse
     {
-        $cart->load('items.product.prices');
+        $cart->load(['items.product.prices', 'coupon']);
 
         $items = $cart->items->map(function (CartItem $item) use ($cart) {
             $price = $item->product->priceFor($cart->franchise_id);
@@ -98,12 +136,21 @@ class CartController extends Controller
             ];
         });
 
+        $subtotal = $items->sum(fn ($i) => (float) ($i['line_total'] ?? 0));
+        $discount = $cart->couponDiscountAmount();
+
         return response()->json([
             'cart_id' => $cart->id,
             'franchise_id' => $cart->franchise_id,
             'requires_prescription' => $cart->requiresPrescription(),
             'items' => $items,
-            'subtotal' => (string) $items->sum(fn ($i) => (float) ($i['line_total'] ?? 0)),
+            'subtotal' => (string) $subtotal,
+            'coupon' => $cart->coupon ? [
+                'id' => $cart->coupon->id,
+                'code' => $cart->coupon->code,
+                'discount_amount' => (string) $discount,
+            ] : null,
+            'total' => (string) max(0, $subtotal - $discount),
         ]);
     }
 }

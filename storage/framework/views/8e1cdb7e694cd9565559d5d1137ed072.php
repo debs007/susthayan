@@ -1,0 +1,128 @@
+<?php if (isset($component)) { $__componentOriginal5863877a5171c196453bfa0bd807e410 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal5863877a5171c196453bfa0bd807e410 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.layouts.app','data' => ['title' => 'Categories']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('layouts.app'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['title' => 'Categories']); ?>
+    <?php if (isset($component)) { $__componentOriginal2347dc4dfde5cbda367ab4d22dfe8d00 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal2347dc4dfde5cbda367ab4d22dfe8d00 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.form.errors','data' => []] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('form.errors'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes([]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal2347dc4dfde5cbda367ab4d22dfe8d00)): ?>
+<?php $attributes = $__attributesOriginal2347dc4dfde5cbda367ab4d22dfe8d00; ?>
+<?php unset($__attributesOriginal2347dc4dfde5cbda367ab4d22dfe8d00); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal2347dc4dfde5cbda367ab4d22dfe8d00)): ?>
+<?php $component = $__componentOriginal2347dc4dfde5cbda367ab4d22dfe8d00; ?>
+<?php unset($__componentOriginal2347dc4dfde5cbda367ab4d22dfe8d00); ?>
+<?php endif; ?>
+
+    <?php if(session('success')): ?>
+        <div class="mb-6 flex items-center gap-2 rounded-lg border border-success-500/30 bg-success-50 px-4 py-2.5 text-sm text-success-600">
+            <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4 flex-shrink-0"><path d="m5 13 4 4L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <?php echo e(session('success')); ?>
+
+        </div>
+    <?php endif; ?>
+
+    <div class="grid gap-6 lg:grid-cols-3">
+        <div class="lg:col-span-2">
+            <div class="rounded-xl border border-border bg-canvas-raised">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="text-left text-xs uppercase tracking-wide text-ink-muted">
+                            <th class="px-5 py-3 font-medium">Category</th>
+                            <th class="px-5 py-3 font-medium">Parent</th>
+                            <th class="px-5 py-3 font-medium">Products</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-border">
+                        <?php $__empty_1 = true; $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                            <tr>
+                                <td class="px-5 py-3 font-medium"><?php echo e($category->name); ?></td>
+                                <td class="px-5 py-3 text-ink-muted"><?php echo e($category->parent?->name ?? '—'); ?></td>
+                                <td class="px-5 py-3 font-code text-xs"><?php echo e($category->products_count); ?></td>
+                            </tr>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                            <tr>
+                                <td colspan="3" class="px-5 py-12 text-center text-ink-muted">No categories yet - add the first one.</td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div>
+            <form method="POST" action="<?php echo e(route('admin.categories.store')); ?>" class="space-y-4 rounded-xl border border-border bg-canvas-raised p-5">
+                <?php echo csrf_field(); ?>
+                <h2 class="font-display font-semibold">Add category</h2>
+                <?php if (isset($component)) { $__componentOriginal45920e144996b26f3340500ed9e02bd3 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal45920e144996b26f3340500ed9e02bd3 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.form.field','data' => ['name' => 'name','label' => 'Name','required' => true]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('form.field'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['name' => 'name','label' => 'Name','required' => true]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal45920e144996b26f3340500ed9e02bd3)): ?>
+<?php $attributes = $__attributesOriginal45920e144996b26f3340500ed9e02bd3; ?>
+<?php unset($__attributesOriginal45920e144996b26f3340500ed9e02bd3); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal45920e144996b26f3340500ed9e02bd3)): ?>
+<?php $component = $__componentOriginal45920e144996b26f3340500ed9e02bd3; ?>
+<?php unset($__componentOriginal45920e144996b26f3340500ed9e02bd3); ?>
+<?php endif; ?>
+                <?php if (isset($component)) { $__componentOriginal8cee41e4af1fe2df52d1d5acd06eed36 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal8cee41e4af1fe2df52d1d5acd06eed36 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.form.select','data' => ['name' => 'parent_id','label' => 'Parent category','placeholder' => 'None - top level','options' => $categories->pluck('name', 'id')]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('form.select'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['name' => 'parent_id','label' => 'Parent category','placeholder' => 'None - top level','options' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($categories->pluck('name', 'id'))]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal8cee41e4af1fe2df52d1d5acd06eed36)): ?>
+<?php $attributes = $__attributesOriginal8cee41e4af1fe2df52d1d5acd06eed36; ?>
+<?php unset($__attributesOriginal8cee41e4af1fe2df52d1d5acd06eed36); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal8cee41e4af1fe2df52d1d5acd06eed36)): ?>
+<?php $component = $__componentOriginal8cee41e4af1fe2df52d1d5acd06eed36; ?>
+<?php unset($__componentOriginal8cee41e4af1fe2df52d1d5acd06eed36); ?>
+<?php endif; ?>
+                <button type="submit" class="w-full rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white hover:bg-primary-600">
+                    Add category
+                </button>
+            </form>
+        </div>
+    </div>
+ <?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal5863877a5171c196453bfa0bd807e410)): ?>
+<?php $attributes = $__attributesOriginal5863877a5171c196453bfa0bd807e410; ?>
+<?php unset($__attributesOriginal5863877a5171c196453bfa0bd807e410); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal5863877a5171c196453bfa0bd807e410)): ?>
+<?php $component = $__componentOriginal5863877a5171c196453bfa0bd807e410; ?>
+<?php unset($__componentOriginal5863877a5171c196453bfa0bd807e410); ?>
+<?php endif; ?>
+<?php /**PATH /var/www/susthayan/susthayan/resources/views/admin/categories/index.blade.php ENDPATH**/ ?>

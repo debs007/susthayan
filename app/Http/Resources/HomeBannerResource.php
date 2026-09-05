@@ -12,6 +12,7 @@ class HomeBannerResource extends JsonResource
         return [
             'id' => $this->id,
             'image_url' => $this->image_url,
+            'coupon_id' => $this->coupon_id,
             'badge_text' => $this->badge_text,
             'headline' => $this->headline,
             'subtitle' => $this->subtitle,

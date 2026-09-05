@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\CreateHomeBannerRequest;
+use App\Models\Coupon;
 use App\Models\HomeBanner;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
@@ -13,9 +14,10 @@ class HomeBannerController extends Controller
 {
     public function index(): View
     {
-        $banners = HomeBanner::orderBy('sort_order')->orderBy('id')->get();
+        $banners = HomeBanner::with('coupon')->orderBy('sort_order')->orderBy('id')->get();
+        $coupons = Coupon::where('is_active', true)->orderBy('code')->get();
 
-        return view('admin.home-banners.index', compact('banners'));
+        return view('admin.home-banners.index', compact('banners', 'coupons'));
     }
 
     public function store(CreateHomeBannerRequest $request): RedirectResponse

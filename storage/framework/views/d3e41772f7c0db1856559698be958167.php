@@ -52,6 +52,9 @@
                             <div>
                                 <p class="font-medium"><?php echo e($banner->headline ?? '(no headline)'); ?></p>
                                 <p class="text-xs text-ink-muted"><?php echo e($banner->subtitle); ?></p>
+                                <?php if($banner->coupon): ?>
+                                    <p class="mt-1 inline-block rounded bg-primary-50 px-1.5 py-0.5 font-code text-[10px] font-medium text-primary-600"><?php echo e($banner->coupon->code); ?></p>
+                                <?php endif; ?>
                             </div>
                             <?php if($banner->is_active): ?>
                                 <span class="text-xs font-medium text-success-600">Live</span>
@@ -174,6 +177,26 @@
 <?php $component = $__componentOriginal45920e144996b26f3340500ed9e02bd3; ?>
 <?php unset($__componentOriginal45920e144996b26f3340500ed9e02bd3); ?>
 <?php endif; ?>
+                <?php if (isset($component)) { $__componentOriginal8cee41e4af1fe2df52d1d5acd06eed36 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal8cee41e4af1fe2df52d1d5acd06eed36 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.form.select','data' => ['name' => 'coupon_id','label' => 'Link to coupon','placeholder' => 'No coupon - button just shows a message','options' => $coupons->pluck('code', 'id')]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('form.select'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['name' => 'coupon_id','label' => 'Link to coupon','placeholder' => 'No coupon - button just shows a message','options' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($coupons->pluck('code', 'id'))]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal8cee41e4af1fe2df52d1d5acd06eed36)): ?>
+<?php $attributes = $__attributesOriginal8cee41e4af1fe2df52d1d5acd06eed36; ?>
+<?php unset($__attributesOriginal8cee41e4af1fe2df52d1d5acd06eed36); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal8cee41e4af1fe2df52d1d5acd06eed36)): ?>
+<?php $component = $__componentOriginal8cee41e4af1fe2df52d1d5acd06eed36; ?>
+<?php unset($__componentOriginal8cee41e4af1fe2df52d1d5acd06eed36); ?>
+<?php endif; ?>
                 <?php if (isset($component)) { $__componentOriginal45920e144996b26f3340500ed9e02bd3 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal45920e144996b26f3340500ed9e02bd3 = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.form.field','data' => ['name' => 'sort_order','label' => 'Order','type' => 'number','placeholder' => '0']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -195,7 +218,7 @@
 <?php unset($__componentOriginal45920e144996b26f3340500ed9e02bd3); ?>
 <?php endif; ?>
 
-                <p class="text-xs text-ink-muted">All text fields are optional - leave blank for an image-only banner. Tapping the button in the app currently shows a "not connected" message (no offers/coupons system exists yet to link it to).</p>
+                <p class="text-xs text-ink-muted">All text fields are optional - leave blank for an image-only banner. Linking a coupon makes the button open that coupon's product list in the app; without one, the button shows a "not connected" message.</p>
 
                 <button type="submit" class="w-full rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white hover:bg-primary-600">
                     Add banner

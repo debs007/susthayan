@@ -14,9 +14,14 @@ use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\Auth\CustomerAuthController;
 use App\Http\Controllers\Api\Auth\StaffAuthController;
 use App\Http\Controllers\Api\Customer\AddressController;
+use App\Http\Controllers\Api\Customer\AppointmentBookingController;
 use App\Http\Controllers\Api\Customer\BrandController as CustomerBrandController;
 use App\Http\Controllers\Api\Customer\CartController;
+use App\Http\Controllers\Api\Customer\CouponController;
+use App\Http\Controllers\Api\Customer\DepartmentController;
+use App\Http\Controllers\Api\Customer\DoctorController as CustomerDoctorController;
 use App\Http\Controllers\Api\Customer\FranchiseController as CustomerFranchiseController;
+use App\Http\Controllers\Api\Customer\HealthArticleController;
 use App\Http\Controllers\Api\Customer\HealthController;
 use App\Http\Controllers\Api\Customer\HomeBannerController as CustomerHomeBannerController;
 use App\Http\Controllers\Api\Customer\LabTestBookingController;
@@ -91,9 +96,21 @@ Route::prefix('customer')->middleware(['auth:sanctum', 'role:Customer'])->group(
 
     Route::get('/home-banners', [CustomerHomeBannerController::class, 'index']);
 
+    Route::get('/coupons', [CouponController::class, 'index']);
+    Route::get('/coupons/{coupon}/products', [CouponController::class, 'products']);
+
+    Route::get('/health-articles', [HealthArticleController::class, 'index']);
+
+    Route::get('/departments', [DepartmentController::class, 'index']);
+    Route::get('/doctors', [CustomerDoctorController::class, 'index']);
+    Route::get('/doctors/{doctor}', [CustomerDoctorController::class, 'show']);
+    Route::post('/appointment-bookings', [AppointmentBookingController::class, 'store']);
+    Route::get('/appointment-bookings', [AppointmentBookingController::class, 'index']);
+
     Route::get('/lab-tests', [CustomerLabTestController::class, 'index']);
     Route::get('/lab-tests/blocked-dates', [CustomerLabTestController::class, 'blockedDates']);
     Route::get('/lab-tests/{labTest}', [CustomerLabTestController::class, 'show']);
+    Route::get('/lab-tests/{labTest}/centers', [CustomerLabTestController::class, 'centers']);
     Route::post('/lab-test-bookings', [LabTestBookingController::class, 'store']);
     Route::get('/lab-test-bookings', [LabTestBookingController::class, 'index']);
 
@@ -102,6 +119,8 @@ Route::prefix('customer')->middleware(['auth:sanctum', 'role:Customer'])->group(
 
     Route::get('/cart', [CartController::class, 'show']);
     Route::post('/cart/select-franchise', [CartController::class, 'selectFranchise']);
+    Route::post('/cart/apply-coupon', [CartController::class, 'applyCoupon']);
+    Route::post('/cart/remove-coupon', [CartController::class, 'removeCoupon']);
     Route::post('/cart/items', [CartController::class, 'addItem']);
     Route::patch('/cart/items/{cartItem}', [CartController::class, 'updateItem']);
     Route::delete('/cart/items/{cartItem}', [CartController::class, 'removeItem']);

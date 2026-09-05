@@ -29,7 +29,13 @@
             ['label' => 'Catalogue', 'route' => 'admin.products.index', 'active' => 'admin.products.*|admin.categories.*', 'live' => true],
             ['label' => 'Brands', 'route' => 'admin.brands.index', 'active' => 'admin.brands.*', 'live' => true],
             ['label' => 'Lab Tests', 'route' => 'admin.lab-tests.index', 'active' => 'admin.lab-tests.*|admin.lab-test-categories.*|admin.lab-test-blocked-dates.*', 'live' => true],
+            ['label' => 'Lab Centers', 'route' => 'admin.lab-centers.index', 'active' => 'admin.lab-centers.*', 'live' => true],
             ['label' => 'Home Banners', 'route' => 'admin.home-banners.index', 'active' => 'admin.home-banners.*', 'live' => true],
+            ['label' => 'Coupons', 'route' => 'admin.coupons.index', 'active' => 'admin.coupons.*', 'live' => true],
+            ['label' => 'Health Articles', 'route' => 'admin.health-articles.index', 'active' => 'admin.health-articles.*', 'live' => true],
+            ['label' => 'Departments', 'route' => 'admin.departments.index', 'active' => 'admin.departments.*', 'live' => true],
+            ['label' => 'Hospitals', 'route' => 'admin.hospitals.index', 'active' => 'admin.hospitals.*', 'live' => true],
+            ['label' => 'Doctors', 'route' => 'admin.doctors.index', 'active' => 'admin.doctors.*', 'live' => true],
             ['label' => 'Suppliers & PO', 'route' => 'admin.vendors.index', 'active' => 'admin.vendors.*', 'live' => true],
         ],
         'Finance' => [

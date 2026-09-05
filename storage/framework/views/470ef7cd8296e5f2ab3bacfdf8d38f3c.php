@@ -1,0 +1,117 @@
+<?php if (isset($component)) { $__componentOriginal5863877a5171c196453bfa0bd807e410 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal5863877a5171c196453bfa0bd807e410 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.layouts.app','data' => ['title' => 'Lab Centers']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('layouts.app'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['title' => 'Lab Centers']); ?>
+    <?php if (isset($component)) { $__componentOriginal2347dc4dfde5cbda367ab4d22dfe8d00 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal2347dc4dfde5cbda367ab4d22dfe8d00 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.form.errors','data' => []] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('form.errors'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes([]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal2347dc4dfde5cbda367ab4d22dfe8d00)): ?>
+<?php $attributes = $__attributesOriginal2347dc4dfde5cbda367ab4d22dfe8d00; ?>
+<?php unset($__attributesOriginal2347dc4dfde5cbda367ab4d22dfe8d00); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal2347dc4dfde5cbda367ab4d22dfe8d00)): ?>
+<?php $component = $__componentOriginal2347dc4dfde5cbda367ab4d22dfe8d00; ?>
+<?php unset($__componentOriginal2347dc4dfde5cbda367ab4d22dfe8d00); ?>
+<?php endif; ?>
+
+    <?php if(session('success')): ?>
+        <div class="mb-6 flex items-center gap-2 rounded-lg border border-success-500/30 bg-success-50 px-4 py-2.5 text-sm text-success-600">
+            <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4 flex-shrink-0"><path d="m5 13 4 4L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <?php echo e(session('success')); ?>
+
+        </div>
+    <?php endif; ?>
+
+    <div class="mb-6 flex items-center justify-between">
+        <div>
+            <h1 class="font-display text-lg font-semibold">Lab Centers</h1>
+            <p class="text-sm text-ink-muted">Where tests are performed - customers pick one of these per booking.</p>
+        </div>
+        <a href="<?php echo e(route('admin.lab-centers.create')); ?>" class="rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white hover:bg-primary-600">
+            + Add center
+        </a>
+    </div>
+
+    <div class="rounded-xl border border-border bg-canvas-raised">
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="text-left text-xs uppercase tracking-wide text-ink-muted">
+                    <th class="px-5 py-3 font-medium">Center</th>
+                    <th class="px-5 py-3 font-medium">Franchise</th>
+                    <th class="px-5 py-3 font-medium">Home collection</th>
+                    <th class="px-5 py-3 font-medium">Tests offered</th>
+                    <th class="px-5 py-3 font-medium">Status</th>
+                    <th class="px-5 py-3"></th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-border">
+                <?php $__empty_1 = true; $__currentLoopData = $centers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $center): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                    <tr>
+                        <td class="px-5 py-3">
+                            <p class="font-medium"><?php echo e($center->name); ?></p>
+                            <p class="text-xs text-ink-muted"><?php echo e($center->fullAddress()); ?></p>
+                        </td>
+                        <td class="px-5 py-3 text-ink-muted"><?php echo e($center->franchise->name); ?></td>
+                        <td class="px-5 py-3">
+                            <?php if($center->offers_home_collection): ?>
+                                <span class="rounded-full bg-success-50 px-2 py-0.5 text-xs font-medium text-success-600">Yes</span>
+                            <?php else: ?>
+                                <span class="text-xs text-ink-muted">No</span>
+                            <?php endif; ?>
+                        </td>
+                        <td class="px-5 py-3 font-code text-xs"><?php echo e($center->tests_count); ?></td>
+                        <td class="px-5 py-3">
+                            <?php if($center->is_active): ?>
+                                <span class="text-xs font-medium text-success-600">Active</span>
+                            <?php else: ?>
+                                <span class="text-xs font-medium text-ink-muted">Hidden</span>
+                            <?php endif; ?>
+                        </td>
+                        <td class="px-5 py-3 text-right">
+                            <div class="flex items-center justify-end gap-3">
+                                <a href="<?php echo e(route('admin.lab-centers.edit', $center)); ?>" class="text-xs font-medium text-primary-500 hover:text-primary-600">Edit</a>
+                                <form method="POST" action="<?php echo e(route('admin.lab-centers.toggle-active', $center)); ?>">
+                                    <?php echo csrf_field(); ?>
+                                    <?php echo method_field('PATCH'); ?>
+                                    <button type="submit" class="text-xs font-medium text-ink-muted hover:text-ink">
+                                        <?php echo e($center->is_active ? 'Hide' : 'Unhide'); ?>
+
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                    <tr>
+                        <td colspan="6" class="px-5 py-12 text-center text-ink-muted">No centers yet - add the first one.</td>
+                    </tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
+ <?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal5863877a5171c196453bfa0bd807e410)): ?>
+<?php $attributes = $__attributesOriginal5863877a5171c196453bfa0bd807e410; ?>
+<?php unset($__attributesOriginal5863877a5171c196453bfa0bd807e410); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal5863877a5171c196453bfa0bd807e410)): ?>
+<?php $component = $__componentOriginal5863877a5171c196453bfa0bd807e410; ?>
+<?php unset($__componentOriginal5863877a5171c196453bfa0bd807e410); ?>
+<?php endif; ?>
+<?php /**PATH /var/www/susthayan/susthayan/resources/views/admin/lab-centers/index.blade.php ENDPATH**/ ?>

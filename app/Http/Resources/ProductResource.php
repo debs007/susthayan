@@ -28,6 +28,7 @@ class ProductResource extends JsonResource
             'salt_composition' => $this->salt_composition,
             'manufacturer' => $this->manufacturer,
             'category' => $this->whenLoaded('category', fn () => $this->category?->name),
+            'category_id' => $this->category_id,
             'brand' => $this->whenLoaded('brand', fn () => $this->brand ? ['id' => $this->brand->id, 'name' => $this->brand->name, 'logo_url' => $this->brand->logo_url] : null),
             'unit' => $this->unit,
             'image_url' => $this->image_url,

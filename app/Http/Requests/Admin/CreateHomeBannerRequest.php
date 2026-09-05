@@ -15,6 +15,7 @@ class CreateHomeBannerRequest extends FormRequest
     {
         return [
             'image' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
+            'coupon_id' => ['nullable', 'integer', 'exists:coupons,id'],
             'badge_text' => ['nullable', 'string', 'max:20'],
             'headline' => ['nullable', 'string', 'max:60'],
             'subtitle' => ['nullable', 'string', 'max:150'],

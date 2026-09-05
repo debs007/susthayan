@@ -23,6 +23,9 @@
                             <div>
                                 <p class="font-medium">{{ $banner->headline ?? '(no headline)' }}</p>
                                 <p class="text-xs text-ink-muted">{{ $banner->subtitle }}</p>
+                                @if ($banner->coupon)
+                                    <p class="mt-1 inline-block rounded bg-primary-50 px-1.5 py-0.5 font-code text-[10px] font-medium text-primary-600">{{ $banner->coupon->code }}</p>
+                                @endif
                             </div>
                             @if ($banner->is_active)
                                 <span class="text-xs font-medium text-success-600">Live</span>
@@ -68,9 +71,10 @@
                 <x-form.field name="headline" label="Headline" placeholder="e.g. 20% OFF" />
                 <x-form.field name="subtitle" label="Subtitle" placeholder="e.g. On medicines + Free delivery" />
                 <x-form.field name="button_text" label="Button text" placeholder="e.g. ORDER NOW" />
+                <x-form.select name="coupon_id" label="Link to coupon" placeholder="No coupon - button just shows a message" :options="$coupons->pluck('code', 'id')" />
                 <x-form.field name="sort_order" label="Order" type="number" placeholder="0" />
 
-                <p class="text-xs text-ink-muted">All text fields are optional - leave blank for an image-only banner. Tapping the button in the app currently shows a "not connected" message (no offers/coupons system exists yet to link it to).</p>
+                <p class="text-xs text-ink-muted">All text fields are optional - leave blank for an image-only banner. Linking a coupon makes the button open that coupon's product list in the app; without one, the button shows a "not connected" message.</p>
 
                 <button type="submit" class="w-full rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white hover:bg-primary-600">
                     Add banner

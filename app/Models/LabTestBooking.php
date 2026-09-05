@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class LabTestBooking extends Model
 {
     protected $fillable = [
-        'order_id', 'lab_test_id', 'user_id', 'franchise_id', 'address_id',
+        'order_id', 'lab_test_id', 'lab_center_id', 'user_id', 'franchise_id', 'address_id',
         'booking_type', 'scheduled_date', 'status',
     ];
 
@@ -24,6 +24,11 @@ class LabTestBooking extends Model
     public function labTest(): BelongsTo
     {
         return $this->belongsTo(LabTest::class);
+    }
+
+    public function labCenter(): BelongsTo
+    {
+        return $this->belongsTo(LabCenter::class);
     }
 
     public function user(): BelongsTo

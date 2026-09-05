@@ -97,10 +97,17 @@ class CheckoutService
 
             // Delivery pricing (distance/minimum-order based fees) isn't modelled
             // yet - delivery_charge stays 0 until that's designed.
+            // Discount computed the same way Cart::couponDiscountAmount()
+            // already does (same method, same source of truth) - only
+            // ever non-zero if a coupon was actually applied and still
+            // valid at the moment of checkout.
+            $discount = $cart->couponDiscountAmount();
+
             $order->update([
                 'subtotal_amount' => $subtotal,
+                'discount_amount' => $discount,
                 'tax_amount' => $tax,
-                'total_amount' => $subtotal + $tax,
+                'total_amount' => max(0, $subtotal + $tax - $discount),
             ]);
 
             if ($prescription) {
@@ -108,6 +115,10 @@ class CheckoutService
             }
 
             $cart->items()->delete();
+            // Coupon lives on the cart, not the (now-empty) cart's items -
+            // clearing it explicitly so it doesn't silently reapply to
+            // whatever the customer shops for next.
+            $cart->update(['coupon_id' => null]);
 
             return $order->fresh(['items.product']);
         });

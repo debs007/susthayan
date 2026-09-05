@@ -64,6 +64,18 @@ class Order extends Model
         return $this->hasMany(OrderItem::class);
     }
 
+    /** The lab-test equivalent of items() - populated only when order_type is 'lab_test', null for a product order. */
+    public function labTestBooking(): HasOne
+    {
+        return $this->hasOne(LabTestBooking::class);
+    }
+
+    /** Same pattern as labTestBooking() - the appointment equivalent, null for a product or lab-test order. */
+    public function appointmentBooking(): HasOne
+    {
+        return $this->hasOne(AppointmentBooking::class);
+    }
+
     public function payments(): HasMany
     {
         return $this->hasMany(CustomerPayment::class);

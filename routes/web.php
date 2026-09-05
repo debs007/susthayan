@@ -3,9 +3,15 @@
 use App\Http\Controllers\Web\Admin\AuditLogController;
 use App\Http\Controllers\Web\Admin\BrandController;
 use App\Http\Controllers\Web\Admin\CategoryController as AdminCategoryController;
+use App\Http\Controllers\Web\Admin\CouponController;
 use App\Http\Controllers\Web\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Web\Admin\DepartmentController;
+use App\Http\Controllers\Web\Admin\DoctorController;
 use App\Http\Controllers\Web\Admin\FranchiseController as AdminFranchiseController;
+use App\Http\Controllers\Web\Admin\HealthArticleController;
 use App\Http\Controllers\Web\Admin\HomeBannerController;
+use App\Http\Controllers\Web\Admin\HospitalController;
+use App\Http\Controllers\Web\Admin\LabCenterController;
 use App\Http\Controllers\Web\Admin\LabTestBlockedDateController;
 use App\Http\Controllers\Web\Admin\LabTestCategoryController;
 use App\Http\Controllers\Web\Admin\LabTestController;
@@ -158,6 +164,13 @@ Route::middleware('auth:web')->group(function () {
             Route::patch('/lab-tests/{labTest}', [LabTestController::class, 'update'])->name('lab-tests.update');
             Route::patch('/lab-tests/{labTest}/toggle-active', [LabTestController::class, 'toggleActive'])->name('lab-tests.toggle-active');
 
+            Route::get('/lab-centers', [LabCenterController::class, 'index'])->name('lab-centers.index');
+            Route::get('/lab-centers/create', [LabCenterController::class, 'create'])->name('lab-centers.create');
+            Route::post('/lab-centers', [LabCenterController::class, 'store'])->name('lab-centers.store');
+            Route::get('/lab-centers/{labCenter}/edit', [LabCenterController::class, 'edit'])->name('lab-centers.edit');
+            Route::patch('/lab-centers/{labCenter}', [LabCenterController::class, 'update'])->name('lab-centers.update');
+            Route::patch('/lab-centers/{labCenter}/toggle-active', [LabCenterController::class, 'toggleActive'])->name('lab-centers.toggle-active');
+
             Route::get('/lab-test-blocked-dates', [LabTestBlockedDateController::class, 'index'])->name('lab-test-blocked-dates.index');
             Route::post('/lab-test-blocked-dates', [LabTestBlockedDateController::class, 'store'])->name('lab-test-blocked-dates.store');
             Route::delete('/lab-test-blocked-dates/{labTestBlockedDate}', [LabTestBlockedDateController::class, 'destroy'])->name('lab-test-blocked-dates.destroy');
@@ -166,6 +179,33 @@ Route::middleware('auth:web')->group(function () {
             Route::post('/home-banners', [HomeBannerController::class, 'store'])->name('home-banners.store');
             Route::patch('/home-banners/{homeBanner}/toggle-active', [HomeBannerController::class, 'toggleActive'])->name('home-banners.toggle-active');
             Route::delete('/home-banners/{homeBanner}', [HomeBannerController::class, 'destroy'])->name('home-banners.destroy');
+
+            Route::get('/coupons', [CouponController::class, 'index'])->name('coupons.index');
+            Route::get('/coupons/create', [CouponController::class, 'create'])->name('coupons.create');
+            Route::post('/coupons', [CouponController::class, 'store'])->name('coupons.store');
+            Route::get('/coupons/{coupon}/edit', [CouponController::class, 'edit'])->name('coupons.edit');
+            Route::patch('/coupons/{coupon}', [CouponController::class, 'update'])->name('coupons.update');
+            Route::patch('/coupons/{coupon}/toggle-active', [CouponController::class, 'toggleActive'])->name('coupons.toggle-active');
+
+            Route::get('/health-articles', [HealthArticleController::class, 'index'])->name('health-articles.index');
+            Route::post('/health-articles', [HealthArticleController::class, 'store'])->name('health-articles.store');
+            Route::patch('/health-articles/{healthArticle}/toggle-active', [HealthArticleController::class, 'toggleActive'])->name('health-articles.toggle-active');
+            Route::delete('/health-articles/{healthArticle}', [HealthArticleController::class, 'destroy'])->name('health-articles.destroy');
+
+            Route::get('/departments', [DepartmentController::class, 'index'])->name('departments.index');
+            Route::post('/departments', [DepartmentController::class, 'store'])->name('departments.store');
+
+            Route::get('/hospitals', [HospitalController::class, 'index'])->name('hospitals.index');
+            Route::get('/hospitals/create', [HospitalController::class, 'create'])->name('hospitals.create');
+            Route::post('/hospitals', [HospitalController::class, 'store'])->name('hospitals.store');
+            Route::patch('/hospitals/{hospital}/toggle-active', [HospitalController::class, 'toggleActive'])->name('hospitals.toggle-active');
+
+            Route::get('/doctors', [DoctorController::class, 'index'])->name('doctors.index');
+            Route::get('/doctors/create', [DoctorController::class, 'create'])->name('doctors.create');
+            Route::post('/doctors', [DoctorController::class, 'store'])->name('doctors.store');
+            Route::get('/doctors/{doctor}/edit', [DoctorController::class, 'edit'])->name('doctors.edit');
+            Route::patch('/doctors/{doctor}', [DoctorController::class, 'update'])->name('doctors.update');
+            Route::patch('/doctors/{doctor}/toggle-active', [DoctorController::class, 'toggleActive'])->name('doctors.toggle-active');
 
             Route::get('/vendors', [AdminSupplierController::class, 'index'])->name('vendors.index');
             Route::get('/vendors/create', [AdminSupplierController::class, 'create'])->name('vendors.create');

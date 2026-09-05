@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class LabTest extends Model
@@ -22,6 +23,11 @@ class LabTest extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(LabTestCategory::class, 'lab_test_category_id');
+    }
+
+    public function centers(): BelongsToMany
+    {
+        return $this->belongsToMany(LabCenter::class, 'lab_center_test')->withPivot('price')->withTimestamps();
     }
 
     public function bookings(): HasMany
