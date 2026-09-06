@@ -15,8 +15,8 @@ use App\Models\Prescription;
 use App\Models\Vital;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\Response;
 
 class HealthController extends Controller
 {

@@ -23,6 +23,7 @@ use App\Http\Controllers\Api\Customer\DoctorController as CustomerDoctorControll
 use App\Http\Controllers\Api\Customer\FranchiseController as CustomerFranchiseController;
 use App\Http\Controllers\Api\Customer\HealthArticleController;
 use App\Http\Controllers\Api\Customer\HealthController;
+use App\Http\Controllers\Api\Customer\MedicineReminderController;
 use App\Http\Controllers\Api\Customer\WalletController;
 use App\Http\Controllers\Api\Customer\HomeBannerController as CustomerHomeBannerController;
 use App\Http\Controllers\Api\Customer\LabTestBookingController;
@@ -110,6 +111,11 @@ Route::prefix('customer')->middleware(['auth:sanctum', 'role:Customer'])->group(
 
     Route::get('/wallet', [WalletController::class, 'show']);
     Route::post('/wallet/topup', [WalletController::class, 'topup']);
+
+    Route::get('/medicine-reminders', [MedicineReminderController::class, 'index']);
+    Route::post('/medicine-reminders', [MedicineReminderController::class, 'store']);
+    Route::patch('/medicine-reminders/{medicineReminder}', [MedicineReminderController::class, 'update']);
+    Route::delete('/medicine-reminders/{medicineReminder}', [MedicineReminderController::class, 'destroy']);
 
     Route::get('/lab-tests', [CustomerLabTestController::class, 'index']);
     Route::get('/lab-tests/blocked-dates', [CustomerLabTestController::class, 'blockedDates']);

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -79,5 +80,46 @@ class User extends Authenticatable
     public function deliveryAssignments(): HasMany
     {
         return $this->hasMany(DeliveryAssignment::class, 'delivery_agent_id');
+    }
+
+    public function healthProfile(): HasOne
+    {
+        return $this->hasOne(HealthProfile::class);
+    }
+
+    public function vitals(): HasMany
+    {
+        return $this->hasMany(Vital::class);
+    }
+
+    public function healthRecords(): HasMany
+    {
+        return $this->hasMany(HealthRecord::class);
+    }
+
+    public function cart(): HasOne
+    {
+        return $this->hasOne(Cart::class);
+    }
+
+    public function appointmentBookings(): HasMany
+    {
+        return $this->hasMany(AppointmentBooking::class);
+    }
+
+    public function labTestBookings(): HasMany
+    {
+        return $this->hasMany(LabTestBooking::class);
+    }
+
+    /** Named distinctly from Notifiable's own notifications() (Laravel's built-in DatabaseNotification) - this app's in-app notifications are a completely separate, custom model. */
+    public function appNotifications(): HasMany
+    {
+        return $this->hasMany(Notification::class);
+    }
+
+    public function wallet(): HasOne
+    {
+        return $this->hasOne(Wallet::class);
     }
 }

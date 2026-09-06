@@ -3,8 +3,13 @@
 use App\Http\Controllers\Web\Admin\AuditLogController;
 use App\Http\Controllers\Web\Admin\BrandController;
 use App\Http\Controllers\Web\Admin\CategoryController as AdminCategoryController;
+use App\Http\Controllers\Web\Admin\AppointmentBookingController as AdminAppointmentBookingController;
 use App\Http\Controllers\Web\Admin\CouponController;
+use App\Http\Controllers\Web\Admin\CustomerController;
 use App\Http\Controllers\Web\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Web\Admin\NotificationController as AdminNotificationController;
+use App\Http\Controllers\Web\Admin\OrderController as AdminOrderController;
+use App\Http\Controllers\Web\Admin\PrescriptionController as AdminPrescriptionController;
 use App\Http\Controllers\Web\Admin\DepartmentController;
 use App\Http\Controllers\Web\Admin\DoctorController;
 use App\Http\Controllers\Web\Admin\FranchiseController as AdminFranchiseController;
@@ -233,5 +238,19 @@ Route::middleware('auth:web')->group(function () {
             Route::patch('/users/{user}', [AdminUserController::class, 'update'])->name('users.update');
             Route::patch('/users/{user}/role', [AdminUserController::class, 'changeRole'])->name('users.role');
             Route::post('/users/{user}/reset-password', [AdminUserController::class, 'resetPassword'])->name('users.reset-password');
+
+            Route::get('/customers', [CustomerController::class, 'index'])->name('customers.index');
+            Route::get('/customers/{customer}', [CustomerController::class, 'show'])->name('customers.show');
+
+            Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders.index');
+            Route::get('/orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
+
+            Route::get('/prescriptions', [AdminPrescriptionController::class, 'index'])->name('prescriptions.index');
+            Route::get('/prescriptions/{prescription}/file', [AdminPrescriptionController::class, 'show'])->name('prescriptions.show');
+
+            Route::get('/appointment-bookings', [AdminAppointmentBookingController::class, 'index'])->name('appointment-bookings.index');
+
+            Route::get('/notifications/send', [AdminNotificationController::class, 'create'])->name('notifications.create');
+            Route::post('/notifications/send', [AdminNotificationController::class, 'store'])->name('notifications.store');
         });
 });
