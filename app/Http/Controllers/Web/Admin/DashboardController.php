@@ -136,7 +136,12 @@ class DashboardController extends Controller
             ->get()
             ->map(fn (Inventory $row) => [
                 'message' => "Low stock: {$row->product->name} — {$row->franchise->name} ({$row->available} left)",
-                'timestamp' => $row->last_change,
+                // last_change comes from a raw SQL MAX() aggregate, not a
+                // real model column - Eloquent has no casting rule for an
+                // ad-hoc selectRaw() alias, so unlike created_at/verified_at/
+                // paid_at elsewhere in this method, this one comes back as a
+                // plain string rather than already being a Carbon instance.
+                'timestamp' => $row->last_change ? \Carbon\Carbon::parse($row->last_change) : null,
             ]);
 
         $settlements = FranchiseSettlement::where('status', 'paid')

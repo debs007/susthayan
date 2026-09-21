@@ -8,6 +8,8 @@
 <?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
 <?php endif; ?>
 <?php $component->withAttributes(['title' => 'Home Banners']); ?>
+<?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::processComponentKey($component); ?>
+
     <?php if (isset($component)) { $__componentOriginal2347dc4dfde5cbda367ab4d22dfe8d00 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal2347dc4dfde5cbda367ab4d22dfe8d00 = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.form.errors','data' => []] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -18,6 +20,8 @@
 <?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
 <?php endif; ?>
 <?php $component->withAttributes([]); ?>
+<?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::processComponentKey($component); ?>
+
 <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal2347dc4dfde5cbda367ab4d22dfe8d00)): ?>
@@ -29,203 +33,128 @@
 <?php unset($__componentOriginal2347dc4dfde5cbda367ab4d22dfe8d00); ?>
 <?php endif; ?>
 
-    <?php if(session('success')): ?>
+    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(session('success')): ?>
         <div class="mb-6 flex items-center gap-2 rounded-lg border border-success-500/30 bg-success-50 px-4 py-2.5 text-sm text-success-600">
             <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4 flex-shrink-0"><path d="m5 13 4 4L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             <?php echo e(session('success')); ?>
 
         </div>
-    <?php endif; ?>
+    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
     <div class="mb-6">
         <h1 class="font-display text-lg font-semibold">Home Banners</h1>
-        <p class="text-sm text-ink-muted">The carousel shown at the top of the app's Home and Categories screens. Lower order number shows first.</p>
+        <p class="text-sm text-ink-muted">Two separate sets - the mobile app and the website each have their own banners, since they need very different image shapes. Lower order number shows first.</p>
     </div>
 
-    <div class="grid gap-6 lg:grid-cols-3">
-        <div class="lg:col-span-2 space-y-4">
-            <?php $__empty_1 = true; $__currentLoopData = $banners; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $banner): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                <div class="flex gap-4 rounded-xl border border-border bg-canvas-raised p-4">
-                    <img src="<?php echo e($banner->image_url); ?>" alt="" class="h-20 w-32 flex-shrink-0 rounded-lg border border-border object-cover">
-                    <div class="flex-1">
-                        <div class="flex items-start justify-between">
-                            <div>
-                                <p class="font-medium"><?php echo e($banner->headline ?? '(no headline)'); ?></p>
-                                <p class="text-xs text-ink-muted"><?php echo e($banner->subtitle); ?></p>
-                                <?php if($banner->coupon): ?>
-                                    <p class="mt-1 inline-block rounded bg-primary-50 px-1.5 py-0.5 font-code text-[10px] font-medium text-primary-600"><?php echo e($banner->coupon->code); ?></p>
-                                <?php endif; ?>
-                            </div>
-                            <?php if($banner->is_active): ?>
-                                <span class="text-xs font-medium text-success-600">Live</span>
-                            <?php else: ?>
-                                <span class="text-xs font-medium text-ink-muted">Hidden</span>
-                            <?php endif; ?>
-                        </div>
-                        <div class="mt-2 flex items-center gap-4 text-xs text-ink-muted">
-                            <span>Order: <?php echo e($banner->sort_order); ?></span>
-                            <form method="POST" action="<?php echo e(route('admin.home-banners.toggle-active', $banner)); ?>">
-                                <?php echo csrf_field(); ?>
-                                <?php echo method_field('PATCH'); ?>
-                                <button type="submit" class="font-medium text-ink-muted hover:text-ink">
-                                    <?php echo e($banner->is_active ? 'Hide' : 'Unhide'); ?>
+    
+    <section class="mb-10">
+        <h2 class="mb-4 font-display font-semibold">Website</h2>
+        <div class="grid gap-6 lg:grid-cols-3">
+            <div class="lg:col-span-2">
+                <?php if (isset($component)) { $__componentOriginal2ee2d426a4e6ad01b52e2306e695f8fd = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal2ee2d426a4e6ad01b52e2306e695f8fd = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.admin.banner-list','data' => ['banners' => $webBanners]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('admin.banner-list'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['banners' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($webBanners)]); ?>
+<?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::processComponentKey($component); ?>
 
-                                </button>
-                            </form>
-                            <form method="POST" action="<?php echo e(route('admin.home-banners.destroy', $banner)); ?>" onsubmit="return confirm('Delete this banner?')">
-                                <?php echo csrf_field(); ?>
-                                <?php echo method_field('DELETE'); ?>
-                                <button type="submit" class="font-medium text-danger-600 hover:text-danger-700">Delete</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-                <div class="rounded-xl border border-dashed border-border p-12 text-center text-ink-muted">
-                    No banners yet - add the first one.
-                </div>
-            <?php endif; ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal2ee2d426a4e6ad01b52e2306e695f8fd)): ?>
+<?php $attributes = $__attributesOriginal2ee2d426a4e6ad01b52e2306e695f8fd; ?>
+<?php unset($__attributesOriginal2ee2d426a4e6ad01b52e2306e695f8fd); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal2ee2d426a4e6ad01b52e2306e695f8fd)): ?>
+<?php $component = $__componentOriginal2ee2d426a4e6ad01b52e2306e695f8fd; ?>
+<?php unset($__componentOriginal2ee2d426a4e6ad01b52e2306e695f8fd); ?>
+<?php endif; ?>
+            </div>
+            <div>
+                <?php if (isset($component)) { $__componentOriginale73aa9789c3afe3ed82677a8e144fb6d = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginale73aa9789c3afe3ed82677a8e144fb6d = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.admin.banner-upload-form','data' => ['platform' => 'web','coupons' => $coupons]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('admin.banner-upload-form'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['platform' => 'web','coupons' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($coupons)]); ?>
+<?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::processComponentKey($component); ?>
+
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginale73aa9789c3afe3ed82677a8e144fb6d)): ?>
+<?php $attributes = $__attributesOriginale73aa9789c3afe3ed82677a8e144fb6d; ?>
+<?php unset($__attributesOriginale73aa9789c3afe3ed82677a8e144fb6d); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginale73aa9789c3afe3ed82677a8e144fb6d)): ?>
+<?php $component = $__componentOriginale73aa9789c3afe3ed82677a8e144fb6d; ?>
+<?php unset($__componentOriginale73aa9789c3afe3ed82677a8e144fb6d); ?>
+<?php endif; ?>
+            </div>
         </div>
+    </section>
 
-        <div>
-            <form method="POST" action="<?php echo e(route('admin.home-banners.store')); ?>" enctype="multipart/form-data" class="space-y-4 rounded-xl border border-border bg-canvas-raised p-5">
-                <?php echo csrf_field(); ?>
-                <h2 class="font-display font-semibold">Add banner</h2>
+    
+    <section>
+        <h2 class="mb-4 font-display font-semibold">Mobile App</h2>
+        <div class="grid gap-6 lg:grid-cols-3">
+            <div class="lg:col-span-2">
+                <?php if (isset($component)) { $__componentOriginal2ee2d426a4e6ad01b52e2306e695f8fd = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal2ee2d426a4e6ad01b52e2306e695f8fd = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.admin.banner-list','data' => ['banners' => $mobileBanners]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('admin.banner-list'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['banners' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($mobileBanners)]); ?>
+<?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::processComponentKey($component); ?>
 
-                <div>
-                    <label for="image" class="block text-sm font-medium text-ink">Banner image <span class="text-danger-500">*</span></label>
-                    <input type="file" name="image" id="image" required accept="image/jpeg,image/png,image/webp" class="mt-1.5 block w-full text-sm text-ink-muted file:mr-3 file:rounded-lg file:border-0 file:bg-primary-500 file:px-3 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-primary-600">
-                </div>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal2ee2d426a4e6ad01b52e2306e695f8fd)): ?>
+<?php $attributes = $__attributesOriginal2ee2d426a4e6ad01b52e2306e695f8fd; ?>
+<?php unset($__attributesOriginal2ee2d426a4e6ad01b52e2306e695f8fd); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal2ee2d426a4e6ad01b52e2306e695f8fd)): ?>
+<?php $component = $__componentOriginal2ee2d426a4e6ad01b52e2306e695f8fd; ?>
+<?php unset($__componentOriginal2ee2d426a4e6ad01b52e2306e695f8fd); ?>
+<?php endif; ?>
+            </div>
+            <div>
+                <?php if (isset($component)) { $__componentOriginale73aa9789c3afe3ed82677a8e144fb6d = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginale73aa9789c3afe3ed82677a8e144fb6d = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.admin.banner-upload-form','data' => ['platform' => 'mobile','coupons' => $coupons]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('admin.banner-upload-form'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['platform' => 'mobile','coupons' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($coupons)]); ?>
+<?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::processComponentKey($component); ?>
 
-                <?php if (isset($component)) { $__componentOriginal45920e144996b26f3340500ed9e02bd3 = $component; } ?>
-<?php if (isset($attributes)) { $__attributesOriginal45920e144996b26f3340500ed9e02bd3 = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.form.field','data' => ['name' => 'badge_text','label' => 'Badge text','placeholder' => 'e.g. FLAT']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
-<?php $component->withName('form.field'); ?>
-<?php if ($component->shouldRender()): ?>
-<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
-<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
-<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
-<?php endif; ?>
-<?php $component->withAttributes(['name' => 'badge_text','label' => 'Badge text','placeholder' => 'e.g. FLAT']); ?>
 <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
-<?php if (isset($__attributesOriginal45920e144996b26f3340500ed9e02bd3)): ?>
-<?php $attributes = $__attributesOriginal45920e144996b26f3340500ed9e02bd3; ?>
-<?php unset($__attributesOriginal45920e144996b26f3340500ed9e02bd3); ?>
+<?php if (isset($__attributesOriginale73aa9789c3afe3ed82677a8e144fb6d)): ?>
+<?php $attributes = $__attributesOriginale73aa9789c3afe3ed82677a8e144fb6d; ?>
+<?php unset($__attributesOriginale73aa9789c3afe3ed82677a8e144fb6d); ?>
 <?php endif; ?>
-<?php if (isset($__componentOriginal45920e144996b26f3340500ed9e02bd3)): ?>
-<?php $component = $__componentOriginal45920e144996b26f3340500ed9e02bd3; ?>
-<?php unset($__componentOriginal45920e144996b26f3340500ed9e02bd3); ?>
+<?php if (isset($__componentOriginale73aa9789c3afe3ed82677a8e144fb6d)): ?>
+<?php $component = $__componentOriginale73aa9789c3afe3ed82677a8e144fb6d; ?>
+<?php unset($__componentOriginale73aa9789c3afe3ed82677a8e144fb6d); ?>
 <?php endif; ?>
-                <?php if (isset($component)) { $__componentOriginal45920e144996b26f3340500ed9e02bd3 = $component; } ?>
-<?php if (isset($attributes)) { $__attributesOriginal45920e144996b26f3340500ed9e02bd3 = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.form.field','data' => ['name' => 'headline','label' => 'Headline','placeholder' => 'e.g. 20% OFF']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
-<?php $component->withName('form.field'); ?>
-<?php if ($component->shouldRender()): ?>
-<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
-<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
-<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
-<?php endif; ?>
-<?php $component->withAttributes(['name' => 'headline','label' => 'Headline','placeholder' => 'e.g. 20% OFF']); ?>
-<?php echo $__env->renderComponent(); ?>
-<?php endif; ?>
-<?php if (isset($__attributesOriginal45920e144996b26f3340500ed9e02bd3)): ?>
-<?php $attributes = $__attributesOriginal45920e144996b26f3340500ed9e02bd3; ?>
-<?php unset($__attributesOriginal45920e144996b26f3340500ed9e02bd3); ?>
-<?php endif; ?>
-<?php if (isset($__componentOriginal45920e144996b26f3340500ed9e02bd3)): ?>
-<?php $component = $__componentOriginal45920e144996b26f3340500ed9e02bd3; ?>
-<?php unset($__componentOriginal45920e144996b26f3340500ed9e02bd3); ?>
-<?php endif; ?>
-                <?php if (isset($component)) { $__componentOriginal45920e144996b26f3340500ed9e02bd3 = $component; } ?>
-<?php if (isset($attributes)) { $__attributesOriginal45920e144996b26f3340500ed9e02bd3 = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.form.field','data' => ['name' => 'subtitle','label' => 'Subtitle','placeholder' => 'e.g. On medicines + Free delivery']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
-<?php $component->withName('form.field'); ?>
-<?php if ($component->shouldRender()): ?>
-<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
-<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
-<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
-<?php endif; ?>
-<?php $component->withAttributes(['name' => 'subtitle','label' => 'Subtitle','placeholder' => 'e.g. On medicines + Free delivery']); ?>
-<?php echo $__env->renderComponent(); ?>
-<?php endif; ?>
-<?php if (isset($__attributesOriginal45920e144996b26f3340500ed9e02bd3)): ?>
-<?php $attributes = $__attributesOriginal45920e144996b26f3340500ed9e02bd3; ?>
-<?php unset($__attributesOriginal45920e144996b26f3340500ed9e02bd3); ?>
-<?php endif; ?>
-<?php if (isset($__componentOriginal45920e144996b26f3340500ed9e02bd3)): ?>
-<?php $component = $__componentOriginal45920e144996b26f3340500ed9e02bd3; ?>
-<?php unset($__componentOriginal45920e144996b26f3340500ed9e02bd3); ?>
-<?php endif; ?>
-                <?php if (isset($component)) { $__componentOriginal45920e144996b26f3340500ed9e02bd3 = $component; } ?>
-<?php if (isset($attributes)) { $__attributesOriginal45920e144996b26f3340500ed9e02bd3 = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.form.field','data' => ['name' => 'button_text','label' => 'Button text','placeholder' => 'e.g. ORDER NOW']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
-<?php $component->withName('form.field'); ?>
-<?php if ($component->shouldRender()): ?>
-<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
-<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
-<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
-<?php endif; ?>
-<?php $component->withAttributes(['name' => 'button_text','label' => 'Button text','placeholder' => 'e.g. ORDER NOW']); ?>
-<?php echo $__env->renderComponent(); ?>
-<?php endif; ?>
-<?php if (isset($__attributesOriginal45920e144996b26f3340500ed9e02bd3)): ?>
-<?php $attributes = $__attributesOriginal45920e144996b26f3340500ed9e02bd3; ?>
-<?php unset($__attributesOriginal45920e144996b26f3340500ed9e02bd3); ?>
-<?php endif; ?>
-<?php if (isset($__componentOriginal45920e144996b26f3340500ed9e02bd3)): ?>
-<?php $component = $__componentOriginal45920e144996b26f3340500ed9e02bd3; ?>
-<?php unset($__componentOriginal45920e144996b26f3340500ed9e02bd3); ?>
-<?php endif; ?>
-                <?php if (isset($component)) { $__componentOriginal8cee41e4af1fe2df52d1d5acd06eed36 = $component; } ?>
-<?php if (isset($attributes)) { $__attributesOriginal8cee41e4af1fe2df52d1d5acd06eed36 = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.form.select','data' => ['name' => 'coupon_id','label' => 'Link to coupon','placeholder' => 'No coupon - button just shows a message','options' => $coupons->pluck('code', 'id')]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
-<?php $component->withName('form.select'); ?>
-<?php if ($component->shouldRender()): ?>
-<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
-<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
-<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
-<?php endif; ?>
-<?php $component->withAttributes(['name' => 'coupon_id','label' => 'Link to coupon','placeholder' => 'No coupon - button just shows a message','options' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($coupons->pluck('code', 'id'))]); ?>
-<?php echo $__env->renderComponent(); ?>
-<?php endif; ?>
-<?php if (isset($__attributesOriginal8cee41e4af1fe2df52d1d5acd06eed36)): ?>
-<?php $attributes = $__attributesOriginal8cee41e4af1fe2df52d1d5acd06eed36; ?>
-<?php unset($__attributesOriginal8cee41e4af1fe2df52d1d5acd06eed36); ?>
-<?php endif; ?>
-<?php if (isset($__componentOriginal8cee41e4af1fe2df52d1d5acd06eed36)): ?>
-<?php $component = $__componentOriginal8cee41e4af1fe2df52d1d5acd06eed36; ?>
-<?php unset($__componentOriginal8cee41e4af1fe2df52d1d5acd06eed36); ?>
-<?php endif; ?>
-                <?php if (isset($component)) { $__componentOriginal45920e144996b26f3340500ed9e02bd3 = $component; } ?>
-<?php if (isset($attributes)) { $__attributesOriginal45920e144996b26f3340500ed9e02bd3 = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.form.field','data' => ['name' => 'sort_order','label' => 'Order','type' => 'number','placeholder' => '0']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
-<?php $component->withName('form.field'); ?>
-<?php if ($component->shouldRender()): ?>
-<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
-<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
-<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
-<?php endif; ?>
-<?php $component->withAttributes(['name' => 'sort_order','label' => 'Order','type' => 'number','placeholder' => '0']); ?>
-<?php echo $__env->renderComponent(); ?>
-<?php endif; ?>
-<?php if (isset($__attributesOriginal45920e144996b26f3340500ed9e02bd3)): ?>
-<?php $attributes = $__attributesOriginal45920e144996b26f3340500ed9e02bd3; ?>
-<?php unset($__attributesOriginal45920e144996b26f3340500ed9e02bd3); ?>
-<?php endif; ?>
-<?php if (isset($__componentOriginal45920e144996b26f3340500ed9e02bd3)): ?>
-<?php $component = $__componentOriginal45920e144996b26f3340500ed9e02bd3; ?>
-<?php unset($__componentOriginal45920e144996b26f3340500ed9e02bd3); ?>
-<?php endif; ?>
-
-                <p class="text-xs text-ink-muted">All text fields are optional - leave blank for an image-only banner. Linking a coupon makes the button open that coupon's product list in the app; without one, the button shows a "not connected" message.</p>
-
-                <button type="submit" class="w-full rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white hover:bg-primary-600">
-                    Add banner
-                </button>
-            </form>
+            </div>
         </div>
-    </div>
+    </section>
  <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal5863877a5171c196453bfa0bd807e410)): ?>

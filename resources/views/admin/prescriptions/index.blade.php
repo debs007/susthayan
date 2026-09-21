@@ -9,7 +9,7 @@
             <label class="mb-1 block text-xs text-ink-muted">Status</label>
             <select name="status" class="rounded-lg border border-border px-3 py-2 text-sm">
                 <option value="">All</option>
-                @foreach (['pending', 'verified', 'rejected'] as $status)
+                @foreach (['pending', 'approved', 'rejected'] as $status)
                     <option value="{{ $status }}" @selected(request('status') === $status)>{{ ucfirst($status) }}</option>
                 @endforeach
             </select>
@@ -43,7 +43,7 @@
                         <td class="px-5 py-3 font-code text-xs">{{ $prescription->order_id ? '#'.$prescription->order_id : '—' }}</td>
                         <td class="px-5 py-3">
                             <span class="rounded-full px-2 py-0.5 text-xs font-medium
-                                {{ $prescription->verification_status === 'verified' ? 'bg-success-50 text-success-600' : ($prescription->verification_status === 'rejected' ? 'bg-danger-50 text-danger-600' : 'bg-canvas text-ink-muted') }}">
+                                {{ $prescription->verification_status === 'approved' ? 'bg-success-50 text-success-600' : ($prescription->verification_status === 'rejected' ? 'bg-danger-50 text-danger-600' : 'bg-canvas text-ink-muted') }}">
                                 {{ ucfirst($prescription->verification_status) }}
                             </span>
                             @if ($prescription->verification_status === 'rejected' && $prescription->rejection_reason)

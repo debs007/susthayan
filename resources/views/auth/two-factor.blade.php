@@ -10,7 +10,13 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ url('/two-factor') }}" class="mt-8 space-y-5">
+    @if ($devOtpAutofill)
+        <div class="mt-6 rounded-lg border border-orange-500/30 bg-orange-50 px-4 py-3 text-sm text-orange-700">
+            <strong>Dev mode</strong> (SMS_PROVIDER=log) - the code below is pre-filled from the log instead of a real SMS. This banner and the pre-fill never appear when a real SMS provider is configured.
+        </div>
+    @endif
+
+    <form method="POST" action="{{ route('two-factor.verify') }}" class="mt-8 space-y-5">
         @csrf
 
         <div>
@@ -22,6 +28,7 @@
                 maxlength="6"
                 name="code"
                 id="code"
+                value="{{ $devOtpAutofill }}"
                 autofocus
                 required
                 class="mt-1.5 block w-full rounded-lg border border-border bg-canvas-raised px-3.5 py-2.5 text-center font-code text-lg tracking-[0.4em] text-ink focus:border-primary-500 focus:ring-1 focus:ring-primary-500"

@@ -14,10 +14,11 @@ class HomeBannerController extends Controller
 {
     public function index(): View
     {
-        $banners = HomeBanner::with('coupon')->orderBy('sort_order')->orderBy('id')->get();
+        $mobileBanners = HomeBanner::with('coupon')->where('platform', 'mobile')->orderBy('sort_order')->orderBy('id')->get();
+        $webBanners = HomeBanner::with('coupon')->where('platform', 'web')->orderBy('sort_order')->orderBy('id')->get();
         $coupons = Coupon::where('is_active', true)->orderBy('code')->get();
 
-        return view('admin.home-banners.index', compact('banners', 'coupons'));
+        return view('admin.home-banners.index', compact('mobileBanners', 'webBanners', 'coupons'));
     }
 
     public function store(CreateHomeBannerRequest $request): RedirectResponse

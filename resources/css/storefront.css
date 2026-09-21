@@ -1,0 +1,72 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+/*
+ * Design tokens for the customer-facing storefront - deliberately
+ * separate from resources/css/app.css (the admin/franchise portal's
+ * teal/honey system). This is the actual Susthayan brand: the four
+ * greens here are the same values as lib/core/constants/app_colors.dart
+ * in the mobile app (themselves sampled from the real logo asset), so
+ * the website and the app read as the same product, not two brands.
+ *
+ * Fraunces (a warm, expressive serif) carries headlines - conveying
+ * care and trust rather than clinical coldness, deliberately not the
+ * generic all-sans-everything SaaS default. Plus Jakarta Sans carries
+ * body/UI text - warmer and more approachable than Inter, while staying
+ * crisp enough that medicine names, dosages and prices read unambiguously.
+ */
+@theme {
+    --font-display: "Fraunces", serif;
+    --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+
+    --color-forest: #0A4A38;
+    --color-brand: #208060;
+    --color-brand-hover: #1A6B50;
+    --color-sage: #60A890;
+    --color-mist: #D0E8E0;
+    --color-mist-deep: #A8D0C8;
+
+    --color-canvas: #FBF9F4;
+    --color-surface: #FFFFFF;
+    --color-ink: #1A1A1A;
+    --color-ink-soft: #6B7280;
+    --color-ink-faint: #9CA3AF;
+    --color-line: #E5E7EB;
+
+    --color-success: #16A34A;
+    --color-warning: #F59E0B;
+    --color-danger: #DC2626;
+}
+
+@layer base {
+    body.storefront {
+        background: var(--color-canvas);
+        color: var(--color-ink);
+        font-family: var(--font-sans);
+        -webkit-font-smoothing: antialiased;
+    }
+
+    .storefront h1, .storefront h2, .storefront h3, .storefront h4 {
+        font-family: var(--font-display);
+    }
+
+    /* Visible keyboard focus everywhere on the storefront. */
+    .storefront :focus-visible {
+        outline: 2px solid var(--color-brand);
+        outline-offset: 2px;
+    }
+
+    /* Required for Alpine's x-cloak/Livewire's wire:cloak - without this,
+       cloaked elements flash visible before Alpine/Livewire initializes. */
+    [x-cloak], [wire\:cloak] {
+        display: none !important;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .storefront *, .storefront *::before, .storefront *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

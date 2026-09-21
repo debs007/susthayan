@@ -21,4 +21,14 @@ class Vital extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    /** Was referenced in an earlier admin view but never actually defined - that page has been silently showing no BP reading even when one exists. Fixes that retroactively, no view changes needed. */
+    public function getBloodPressureLabelAttribute(): ?string
+    {
+        if ($this->blood_pressure_systolic === null || $this->blood_pressure_diastolic === null) {
+            return null;
+        }
+
+        return "{$this->blood_pressure_systolic}/{$this->blood_pressure_diastolic}";
+    }
 }

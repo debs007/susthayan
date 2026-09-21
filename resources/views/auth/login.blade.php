@@ -14,7 +14,7 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ url('/login') }}" class="mt-8 space-y-5">
+    <form method="POST" action="{{ route('login') }}" class="mt-8 space-y-5">
         @csrf
 
         <div>

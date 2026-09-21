@@ -11,7 +11,7 @@ class HomeBannerController extends Controller
 {
     public function index(): JsonResponse
     {
-        $banners = HomeBanner::where('is_active', true)->orderBy('sort_order')->orderBy('id')->get();
+        $banners = HomeBanner::where('is_active', true)->where('platform', 'mobile')->orderBy('sort_order')->orderBy('id')->get();
 
         return response()->json(['data' => HomeBannerResource::collection($banners)]);
     }

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class HomeBanner extends Model
 {
     protected $fillable = [
-        'image_path', 'coupon_id', 'badge_text', 'headline', 'subtitle', 'button_text', 'sort_order', 'is_active',
+        'image_path', 'platform', 'coupon_id', 'badge_text', 'headline', 'subtitle', 'button_text', 'sort_order', 'is_active',
     ];
 
     protected $casts = [

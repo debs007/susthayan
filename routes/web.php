@@ -56,26 +56,41 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', fn () => redirect()->route('dashboard'));
+// Always the storefront - no staff/customer branching here anymore.
+// Staff reach their own login and dashboard at /sa/admin instead (see
+// below), so there's no longer a need to check who's visiting '/'.
+Route::get('/', function () {
+    return app(\App\Http\Controllers\Web\Storefront\HomeController::class)();
+})->name('storefront.home');
 
-Route::middleware('guest:web')->group(function () {
-    Route::get('/login', [LoginController::class, 'show'])->name('login');
-    Route::post('/login', [LoginController::class, 'login']);
-    Route::get('/two-factor', [LoginController::class, 'showTwoFactor'])->name('two-factor.show');
-    Route::post('/two-factor', [LoginController::class, 'verifyTwoFactor'])->name('two-factor.verify');
+// Staff-facing login lives under /sa/admin now, not the bare /login this
+// used to be - a deliberate, less-guessable entry point for the portal
+// Admin, Franchise Owners/Staff, Pharmacists, Accountants, and Delivery
+// Agents use (there's no separate "Supplier" login anywhere in this
+// system - Supplier is only ever a business record staff manage, e.g.
+// purchase orders and invoices, never its own login-capable role).
+Route::prefix('sa/admin')->group(function () {
+    Route::middleware('guest:web')->group(function () {
+        Route::get('/', [LoginController::class, 'show'])->name('login');
+        Route::post('/', [LoginController::class, 'login']);
+        Route::get('/two-factor', [LoginController::class, 'showTwoFactor'])->name('two-factor.show');
+        Route::post('/two-factor', [LoginController::class, 'verifyTwoFactor'])->name('two-factor.verify');
 
-    Route::get('/forgot-password', [LoginController::class, 'showForgotPassword'])->name('forgot-password.show');
-    Route::post('/forgot-password', [LoginController::class, 'sendResetOtp'])
-        ->middleware('throttle:otp')
-        ->name('forgot-password.send');
-    Route::get('/reset-password', [LoginController::class, 'showResetPassword'])->name('password-reset.show');
-    Route::post('/reset-password', [LoginController::class, 'resetPassword'])->name('password-reset.update');
+        Route::get('/forgot-password', [LoginController::class, 'showForgotPassword'])->name('forgot-password.show');
+        Route::post('/forgot-password', [LoginController::class, 'sendResetOtp'])
+            ->middleware('throttle:otp')
+            ->name('forgot-password.send');
+        Route::get('/reset-password', [LoginController::class, 'showResetPassword'])->name('password-reset.show');
+        Route::post('/reset-password', [LoginController::class, 'resetPassword'])->name('password-reset.update');
+    });
+
+    Route::middleware('auth:web')->group(function () {
+        Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    });
 });
 
 Route::middleware('auth:web')->group(function () {
-    Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
     // Franchise Portal - Owner, Staff, Pharmacist share it; franchise.scope
     // stops any of them reaching another store's data via a route-bound id.
     Route::prefix('franchise')
@@ -254,3 +269,5 @@ Route::middleware('auth:web')->group(function () {
             Route::post('/notifications/send', [AdminNotificationController::class, 'store'])->name('notifications.store');
         });
 });
+
+require __DIR__.'/storefront.php';

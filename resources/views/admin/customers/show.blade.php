@@ -53,7 +53,7 @@
                 <div class="flex items-center justify-between border-b border-border py-2 text-sm last:border-0">
                     <p class="text-xs text-ink-muted">{{ $prescription->created_at->format('d M Y') }}</p>
                     <span class="rounded-full px-2 py-0.5 text-xs font-medium
-                        {{ $prescription->verification_status === 'verified' ? 'bg-success-50 text-success-600' : ($prescription->verification_status === 'rejected' ? 'bg-danger-50 text-danger-600' : 'bg-canvas text-ink-muted') }}">
+                        {{ $prescription->verification_status === 'approved' ? 'bg-success-50 text-success-600' : ($prescription->verification_status === 'rejected' ? 'bg-danger-50 text-danger-600' : 'bg-canvas text-ink-muted') }}">
                         {{ ucfirst($prescription->verification_status) }}
                     </span>
                 </div>
