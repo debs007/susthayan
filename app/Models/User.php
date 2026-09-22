@@ -20,7 +20,7 @@ class User extends Authenticatable
 
     protected $fillable = [
         'franchise_id', 'name', 'mobile', 'alternate_mobile', 'email', 'password',
-        'profile_image_path', 'two_factor_enabled', 'is_active',
+        'profile_image_path', 'two_factor_enabled', 'is_active', 'dob', 'gender',
     ];
 
     protected $hidden = [
@@ -33,6 +33,7 @@ class User extends Authenticatable
         'password' => 'hashed',
         'two_factor_enabled' => 'boolean',
         'is_active' => 'boolean',
+        'dob' => 'date',
     ];
 
     public function getActivitylogOptions(): LogOptions

@@ -141,6 +141,7 @@ Route::prefix('customer')->middleware(['auth:sanctum', 'role:Customer'])->group(
     Route::post('/orders', [OrderController::class, 'store']);
     Route::get('/orders', [OrderController::class, 'index']);
     Route::get('/orders/{order}', [OrderController::class, 'show']);
+    Route::get('/orders/{order}/invoice', [OrderController::class, 'downloadInvoice']);
     Route::post('/orders/{order}/payments/initiate', [PaymentController::class, 'initiate']);
     Route::post('/orders/{order}/refunds', [RefundController::class, 'store']);
     Route::get('/orders/{order}/refunds', [RefundController::class, 'index']);

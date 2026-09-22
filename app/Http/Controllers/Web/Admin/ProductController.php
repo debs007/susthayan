@@ -102,6 +102,18 @@ class ProductController extends Controller
         return redirect()->route('admin.products.edit', $product)->with('success', 'Product image updated.');
     }
 
+    public function destroy(Product $product): RedirectResponse
+    {
+        // A real row deletion would fail outright here if this product has
+        // ever been ordered - order_items.product_id is restrictOnDelete().
+        // Deactivating achieves what "delete" actually means to an admin
+        // (gone from the storefront) without breaking past order history
+        // or risking a DB-level constraint failure.
+        $product->update(['is_active' => ! $product->is_active]);
+
+        return back()->with('success', $product->is_active ? 'Product restored.' : 'Product removed from the storefront.');
+    }
+
     public function removeImage(Product $product): RedirectResponse
     {
         $this->productImages->remove($product);

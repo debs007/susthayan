@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Api\Customer;
 
-use App\Exceptions\InsufficientStockException;
 use App\Exceptions\PrescriptionRequiredException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Customer\PlaceOrderRequest;
 use App\Http\Resources\OrderResource;
 use App\Models\Cart;
 use App\Models\Order;
+use App\Services\Invoicing\InvoiceService;
 use App\Services\Orders\CheckoutService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -16,7 +16,10 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class OrderController extends Controller
 {
-    public function __construct(private readonly CheckoutService $checkout) {}
+    public function __construct(
+        private readonly CheckoutService $checkout,
+        private readonly InvoiceService $invoices,
+    ) {}
 
     /**
      * Cart -> Order (still pending_payment - see PaymentController for what
@@ -31,12 +34,9 @@ class OrderController extends Controller
             $order = $this->checkout->placeOrder(
                 user: $request->user(),
                 cart: $cart,
-                franchiseId: $request->validated('franchise_id'),
                 fulfillmentType: $request->validated('fulfillment_type'),
                 addressId: $request->validated('address_id'),
             );
-        } catch (InsufficientStockException $e) {
-            return response()->json(['message' => $e->getMessage()], 409);
         } catch (PrescriptionRequiredException $e) {
             return response()->json(['message' => $e->getMessage()], 422);
         }
@@ -61,5 +61,15 @@ class OrderController extends Controller
         abort_unless($order->user_id === $request->user()->id, 403);
 
         return new OrderResource($order->load(['items.product', 'items.batches', 'franchise', 'labTestBooking.labTest', 'labTestBooking.labCenter', 'appointmentBooking.doctor', 'appointmentBooking.hospital']));
+    }
+
+    public function downloadInvoice(Request $request, Order $order)
+    {
+        abort_unless($order->user_id === $request->user()->id, 403);
+        abort_unless($order->invoice, 404, 'No invoice has been generated for this order yet.');
+
+        $order->load(['franchise', 'user', 'items.product', 'address']);
+
+        return $this->invoices->renderPdf($order, $order->invoice)->download("invoice-{$order->invoice->invoice_number}.pdf");
     }
 }

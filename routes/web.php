@@ -166,6 +166,7 @@ Route::middleware('auth:web')->group(function () {
             Route::post('/products', [AdminProductController::class, 'store'])->name('products.store');
             Route::get('/products/{product}/edit', [AdminProductController::class, 'edit'])->name('products.edit');
             Route::patch('/products/{product}', [AdminProductController::class, 'update'])->name('products.update');
+            Route::delete('/products/{product}', [AdminProductController::class, 'destroy'])->name('products.destroy');
             Route::post('/products/{product}/prices', [AdminProductController::class, 'storePrice'])->name('products.prices.store');
             Route::post('/products/{product}/image', [AdminProductController::class, 'uploadImage'])->name('products.image.upload');
             Route::delete('/products/{product}/image', [AdminProductController::class, 'removeImage'])->name('products.image.remove');
@@ -259,6 +260,9 @@ Route::middleware('auth:web')->group(function () {
 
             Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders.index');
             Route::get('/orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
+            Route::post('/orders/{order}/assign', [AdminOrderController::class, 'assign'])->name('orders.assign');
+            Route::post('/orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.status');
+            Route::get('/orders/{order}/invoice', [AdminOrderController::class, 'downloadInvoice'])->name('orders.invoice');
 
             Route::get('/prescriptions', [AdminPrescriptionController::class, 'index'])->name('prescriptions.index');
             Route::get('/prescriptions/{prescription}/file', [AdminPrescriptionController::class, 'show'])->name('prescriptions.show');

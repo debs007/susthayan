@@ -4,14 +4,23 @@ namespace App\Services\Invoicing;
 
 use App\Models\Invoice;
 use App\Models\Order;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 
-/**
- * Data record only for now - "Invoice generated (GST)" from the SRS flow.
- * Actual PDF rendering is a separate pass.
- */
 class InvoiceService
 {
+    /**
+     * The actual PDF rendering the data-record layer was originally left
+     * without. Needs $order->franchise, ->user, ->items.product and
+     * ->address loaded - every current caller already loads these for its
+     * own detail view, so this doesn't re-fetch them itself.
+     */
+    public function renderPdf(Order $order, Invoice $invoice): \Barryvdh\DomPDF\PDF
+    {
+        return Pdf::loadView('invoices.pdf', ['order' => $order, 'invoice' => $invoice])
+            ->setPaper('a4');
+    }
+
     public function generateFor(Order $order): Invoice
     {
         return DB::transaction(function () use ($order) {

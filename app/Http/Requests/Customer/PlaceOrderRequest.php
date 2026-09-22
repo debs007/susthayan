@@ -16,7 +16,11 @@ class PlaceOrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'franchise_id' => ['required', 'integer', 'exists:franchises,id'],
+            // No longer used by placeOrder() - franchise is assigned by an
+            // admin after the order is placed, not chosen at checkout.
+            // Left nullable rather than removed so the app isn't forced to
+            // stop sending it before it's updated.
+            'franchise_id' => ['nullable', 'integer', 'exists:franchises,id'],
             'fulfillment_type' => ['required', 'in:delivery,pickup'],
             'address_id' => ['required_if:fulfillment_type,delivery', 'nullable', 'integer'],
         ];

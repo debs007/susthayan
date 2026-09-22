@@ -2,11 +2,9 @@
 
 namespace App\Livewire\Storefront;
 
-use App\Exceptions\InsufficientStockException;
 use App\Exceptions\PrescriptionRequiredException;
 use App\Livewire\Storefront\Concerns\HandlesRazorpayPayment;
 use App\Models\Cart;
-use App\Models\Franchise;
 use App\Models\Prescription;
 use App\Services\Orders\CheckoutService;
 use Livewire\Attributes\Validate;
@@ -83,23 +81,17 @@ class CheckoutPage extends Component
             return;
         }
 
-        $franchiseId = $cart->franchise_id ?? Franchise::where('status', 'active')->value('id');
-
-        if (! $franchiseId) {
-            $this->errorMessage = 'No store is available to fulfil this order right now.';
+        try {
+            $order = $checkout->placeOrder($user, $cart, 'delivery', $this->selectedAddressId);
+        } catch (PrescriptionRequiredException $e) {
+            $this->needsApprovedPrescription = true;
+            $this->errorMessage = 'This order needs an approved prescription before it can be placed.';
 
             return;
         }
 
-        try {
-            $order = $checkout->placeOrder($user, $cart, $franchiseId, 'delivery', $this->selectedAddressId);
-        } catch (InsufficientStockException $e) {
-            $this->errorMessage = 'One of your items just went out of stock. Please review your cart.';
-
-            return;
-        } catch (PrescriptionRequiredException $e) {
-            $this->needsApprovedPrescription = true;
-            $this->errorMessage = 'This order needs an approved prescription before it can be placed.';
+        if (! config('services.payment.enabled')) {
+            $this->redirect(route('storefront.orders.confirmation', $order->id), navigate: true);
 
             return;
         }

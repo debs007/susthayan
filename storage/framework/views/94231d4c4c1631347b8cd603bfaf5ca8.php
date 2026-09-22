@@ -8,6 +8,8 @@
 <?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
 <?php endif; ?>
 <?php $component->withAttributes(['title' => 'Orders']); ?>
+<?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::processComponentKey($component); ?>
+
     <div class="mb-6">
         <h1 class="font-display text-lg font-semibold">Orders</h1>
         <p class="text-sm text-ink-muted">Every order across every store - product orders, lab tests, appointments, and wallet top-ups.</p>
@@ -22,24 +24,30 @@
             <label class="mb-1 block text-xs text-ink-muted">Status</label>
             <select name="status" class="rounded-lg border border-border px-3 py-2 text-sm">
                 <option value="">All</option>
-                <?php $__currentLoopData = ['pending_payment', 'confirmed', 'ready_for_dispatch', 'out_for_delivery', 'delivered', 'picked_up', 'cancelled']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $status): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = ['pending_payment', 'confirmed', 'ready_for_dispatch', 'out_for_delivery', 'delivered', 'picked_up', 'cancelled']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $status): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
                     <option value="<?php echo e($status); ?>" <?php if(request('status') === $status): echo 'selected'; endif; ?>><?php echo e(ucfirst(str_replace('_', ' ', $status))); ?></option>
-                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
             </select>
         </div>
         <div>
             <label class="mb-1 block text-xs text-ink-muted">Type</label>
             <select name="order_type" class="rounded-lg border border-border px-3 py-2 text-sm">
                 <option value="">All</option>
-                <?php $__currentLoopData = ['product', 'lab_test', 'appointment', 'wallet_topup']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $type): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = ['product', 'lab_test', 'appointment', 'wallet_topup']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $type): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
                     <option value="<?php echo e($type); ?>" <?php if(request('order_type') === $type): echo 'selected'; endif; ?>><?php echo e(ucfirst(str_replace('_', ' ', $type))); ?></option>
-                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
             </select>
         </div>
+        <div>
+            <label class="mb-1 flex items-center gap-1.5 text-xs text-ink-muted">
+                <input type="checkbox" name="unassigned" value="1" <?php if(request()->boolean('unassigned')): echo 'checked'; endif; ?>>
+                Awaiting assignment only
+            </label>
+        </div>
         <button type="submit" class="rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white hover:bg-primary-600">Filter</button>
-        <?php if(request()->hasAny(['search', 'status', 'order_type'])): ?>
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(request()->hasAny(['search', 'status', 'order_type'])): ?>
             <a href="<?php echo e(route('admin.orders.index')); ?>" class="text-sm text-ink-muted hover:text-ink">Clear</a>
-        <?php endif; ?>
+        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
     </form>
 
     <div class="rounded-xl border border-border bg-canvas-raised">
@@ -57,14 +65,23 @@
                 </tr>
             </thead>
             <tbody class="divide-y divide-border">
-                <?php $__empty_1 = true; $__currentLoopData = $orders; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $order): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = $orders; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $order): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
                     <tr>
                         <td class="px-5 py-3 font-code font-medium">#<?php echo e($order->id); ?></td>
                         <td class="px-5 py-3">
                             <p><?php echo e($order->user->name); ?></p>
                             <p class="text-xs text-ink-muted">+91 <?php echo e($order->user->mobile); ?></p>
                         </td>
-                        <td class="px-5 py-3 text-ink-muted"><?php echo e($order->franchise?->name ?? '—'); ?></td>
+                        <td class="px-5 py-3 text-ink-muted">
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($order->franchise): ?>
+                                <?php echo e($order->franchise->name); ?>
+
+                            <?php elseif($order->order_type === 'product'): ?>
+                                <span class="rounded bg-warning-50 px-1.5 py-0.5 text-xs font-medium text-warning-600">Awaiting assignment</span>
+                            <?php else: ?>
+                                &mdash;
+                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                        </td>
                         <td class="px-5 py-3 text-xs"><?php echo e(ucfirst(str_replace('_', ' ', $order->order_type))); ?></td>
                         <td class="px-5 py-3 font-code">₹<?php echo e(number_format($order->total_amount, 2)); ?></td>
                         <td class="px-5 py-3 text-xs"><?php echo e(ucfirst(str_replace('_', ' ', $order->status->value))); ?></td>
@@ -73,11 +90,11 @@
                             <a href="<?php echo e(route('admin.orders.show', $order)); ?>" class="text-xs font-medium text-primary-500 hover:text-primary-600">Details →</a>
                         </td>
                     </tr>
-                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
                     <tr>
                         <td colspan="8" class="px-5 py-12 text-center text-ink-muted">No orders match these filters.</td>
                     </tr>
-                <?php endif; ?>
+                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
             </tbody>
         </table>
     </div>

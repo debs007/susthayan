@@ -66,7 +66,17 @@
                             {{ $overrideCount > 0 ? "{$overrideCount} franchise-specific" : '—' }}
                         </td>
                         <td class="px-5 py-3 text-right">
+                            @unless ($product->is_active)
+                                <span class="mr-2 rounded bg-danger-50 px-1.5 py-0.5 text-[10px] font-medium text-danger-600">Removed</span>
+                            @endunless
                             <a href="{{ route('admin.products.edit', $product) }}" class="text-sm font-medium text-primary-500 hover:underline">Edit</a>
+                            <form method="POST" action="{{ route('admin.products.destroy', $product) }}" class="ml-3 inline" onsubmit="return confirm('{{ $product->is_active ? 'Remove this product from the storefront?' : 'Restore this product to the storefront?' }}')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-sm font-medium {{ $product->is_active ? 'text-danger-500' : 'text-success-600' }} hover:underline">
+                                    {{ $product->is_active ? 'Delete' : 'Restore' }}
+                                </button>
+                            </form>
                         </td>
                     </tr>
                 @empty

@@ -22,6 +22,8 @@ class UpdateProfileRequest extends FormRequest
             // here that could accidentally let it through.
             'alternate_mobile' => ['nullable', 'string', 'regex:/^[6-9]\d{9}$/'],
             'profile_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
+            'dob' => ['nullable', 'date', 'before:today'],
+            'gender' => ['nullable', 'in:male,female,other'],
         ];
     }
 }

@@ -35,8 +35,9 @@ class CustomerAuthController extends Controller
         }
 
         $user = User::firstOrNew(['mobile' => $mobile]);
+        $isNewUser = ! $user->exists;
 
-        if (! $user->exists) {
+        if ($isNewUser) {
             $user->name = $request->validated('name') ?: 'Customer';
             $user->is_active = true;
         }
@@ -57,6 +58,7 @@ class CustomerAuthController extends Controller
         return response()->json([
             'user' => new UserResource($user),
             'token' => $user->createToken('customer-app')->plainTextToken,
+            'is_new_user' => $isNewUser,
         ]);
     }
 }

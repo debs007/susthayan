@@ -3,29 +3,50 @@
 namespace App\Services\Orders;
 
 use App\Enums\OrderStatus;
-use App\Exceptions\InsufficientStockException;
+use App\Enums\PaymentStatus;
 use App\Exceptions\PrescriptionRequiredException;
 use App\Models\Cart;
+use App\Models\CustomerPayment;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Prescription;
 use App\Models\User;
-use App\Services\Inventory\StockService;
+use App\Services\Invoicing\InvoiceService;
+use App\Services\Payment\PaymentConfirmationService;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
 class CheckoutService
 {
-    public function __construct(private readonly StockService $stock) {}
+    public function __construct(
+        private readonly PaymentConfirmationService $paymentConfirmation,
+        private readonly InvoiceService $invoices,
+    ) {}
 
     /**
-     * Cart -> Order. Stock is only soft-checked here (available(), not
-     * reserve()) - the actual hold happens on payment success, matching the
-     * SRS's "Payment SUCCESS -> Stock RESERVED" ordering. That means stock
-     * can still run out between checkout and payment; PaymentConfirmation
-     * Service has to handle that.
+     * Cart -> Order, with no franchise attached yet. Every customer order
+     * now lands unassigned - an admin picks the fulfilling franchise
+     * afterward (see Admin\OrderAssignmentController), rather than the
+     * customer's cart or a "just pick the only active one" fallback
+     * silently deciding it at checkout.
+     *
+     * That means pricing and stock can't be resolved per-franchise here,
+     * since no franchise is known yet:
+     * - Price uses priceFor(null) - the existing global/default price row
+     *   (franchise_id IS NULL), the same fallback the storefront already
+     *   uses when browsing before a franchise is chosen. This price is
+     *   what the customer actually pays and is NOT re-priced later when
+     *   a franchise is assigned - the assigned franchise fulfills at the
+     *   price the customer already agreed to and paid, not its own local
+     *   pricing. A product with no global price row configured will fail
+     *   checkout here ("No price configured") - every sellable product
+     *   needs one now, not just franchise-specific overrides.
+     * - Stock is NOT checked at all at this stage, since there's no
+     *   franchise to check it against. That check now happens when an
+     *   admin assigns a franchise (see OrderAssignmentController), not
+     *   here at order creation.
      */
-    public function placeOrder(User $user, Cart $cart, int $franchiseId, string $fulfillmentType, ?int $addressId): Order
+    public function placeOrder(User $user, Cart $cart, string $fulfillmentType, ?int $addressId): Order
     {
         $cart->loadMissing('items.product.prices');
 
@@ -33,14 +54,7 @@ class CheckoutService
             throw new RuntimeException('Cart is empty.');
         }
 
-        return DB::transaction(function () use ($user, $cart, $franchiseId, $fulfillmentType, $addressId) {
-            foreach ($cart->items as $cartItem) {
-                $available = $this->stock->available($franchiseId, $cartItem->product_id);
-                if ($available < $cartItem->quantity) {
-                    throw new InsufficientStockException($cartItem->product_id, $cartItem->quantity, $available);
-                }
-            }
-
+        return DB::transaction(function () use ($user, $cart, $fulfillmentType, $addressId) {
             $requiresRx = $cart->items->contains(fn ($item) => $item->product->prescription_required);
             $prescription = null;
 
@@ -62,7 +76,7 @@ class CheckoutService
 
             $order = Order::create([
                 'user_id' => $user->id,
-                'franchise_id' => $franchiseId,
+                'franchise_id' => null,
                 'address_id' => $addressId,
                 'fulfillment_type' => $fulfillmentType,
                 'status' => OrderStatus::PendingPayment,
@@ -73,7 +87,7 @@ class CheckoutService
             $tax = 0;
 
             foreach ($cart->items as $cartItem) {
-                $price = $cartItem->product->priceFor($franchiseId);
+                $price = $cartItem->product->priceFor(null);
 
                 if (! $price) {
                     throw new RuntimeException("No price configured for product #{$cartItem->product_id}.");
@@ -119,6 +133,30 @@ class CheckoutService
             // clearing it explicitly so it doesn't silently reapply to
             // whatever the customer shops for next.
             $cart->update(['coupon_id' => null]);
+
+            // Temporary: payments are off (config('services.payment.enabled')
+            // false). Rather than duplicate markSuccessful()'s confirm +
+            // event-dispatch logic here, run a real (non-Razorpay)
+            // CustomerPayment through the exact same path every genuine
+            // payment already goes through - same guarantees, one code path.
+            if (! config('services.payment.enabled')) {
+                $payment = CustomerPayment::create([
+                    'order_id' => $order->id,
+                    'amount' => $order->total_amount,
+                    'gateway' => 'bypassed',
+                    'status' => PaymentStatus::Initiated,
+                ]);
+
+                $this->paymentConfirmation->markSuccessful($payment);
+
+                // Admin-side invoice access right after placement, as asked -
+                // the customer-facing download still only appears once the
+                // order is actually delivered/picked up (unchanged, see
+                // OrderFulfillmentService). Franchise details on the PDF
+                // itself fill in automatically once one is assigned, since
+                // rendering reads the order live rather than a snapshot.
+                $this->invoices->generateFor($order->fresh());
+            }
 
             return $order->fresh(['items.product']);
         });

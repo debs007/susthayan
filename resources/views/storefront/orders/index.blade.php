@@ -19,6 +19,9 @@
                             <div class="text-right">
                                 <p class="text-sm font-semibold text-ink">₹{{ number_format($order->total_amount, 2) }}</p>
                                 <p class="text-xs text-ink-soft">{{ ucfirst(str_replace('_', ' ', $order->status->value)) }}</p>
+                                @if ($order->invoice)
+                                    <a href="{{ route('storefront.orders.invoice', $order) }}" class="mt-1 inline-block text-xs font-medium text-brand hover:underline">Download invoice</a>
+                                @endif
                             </div>
                         </div>
 

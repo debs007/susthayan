@@ -44,6 +44,7 @@ Route::name('storefront.')->group(function () {
         Route::get('/checkout', CheckoutPage::class)->name('checkout');
         Route::get('/orders/{order}/confirmation', [OrderConfirmationController::class, 'show'])->name('orders.confirmation');
         Route::get('/orders', [OrderHistoryController::class, 'index'])->name('orders');
+        Route::get('/orders/{order}/invoice', [OrderHistoryController::class, 'downloadInvoice'])->name('orders.invoice');
         Route::get('/account', AccountPage::class)->name('account');
         Route::get('/health-records', HealthRecordsPage::class)->name('health-records');
     });

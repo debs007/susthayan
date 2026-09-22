@@ -69,6 +69,11 @@ return [
 
     'payment' => [
         'gateway' => env('PAYMENT_GATEWAY', 'log'),
+        // Temporary, explicit toggle - when false, checkout places orders
+        // directly (no Razorpay step) instead of waiting on payment.
+        // Flip PAYMENT_ENABLED=true in .env to restore the normal flow;
+        // nothing else needs to change.
+        'enabled' => env('PAYMENT_ENABLED', false),
     ],
 
     /*

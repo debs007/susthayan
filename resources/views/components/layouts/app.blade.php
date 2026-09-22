@@ -71,7 +71,7 @@
 
         {{-- Sidebar --}}
         <aside
-            class="fixed inset-y-0 left-0 z-40 w-64 -translate-x-full bg-primary-700 text-white transition-transform lg:static lg:translate-x-0"
+            class="fixed inset-y-0 left-0 z-40 w-64 -translate-x-full bg-primary-700 text-white transition-transform lg:sticky lg:top-0 lg:h-screen lg:translate-x-0"
             :class="{ '!translate-x-0': mobileNavOpen }"
         >
             <div class="flex h-16 items-center gap-2.5 px-6">

@@ -27,6 +27,12 @@
                 @endforeach
             </select>
         </div>
+        <div>
+            <label class="mb-1 flex items-center gap-1.5 text-xs text-ink-muted">
+                <input type="checkbox" name="unassigned" value="1" @checked(request()->boolean('unassigned'))>
+                Awaiting assignment only
+            </label>
+        </div>
         <button type="submit" class="rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white hover:bg-primary-600">Filter</button>
         @if (request()->hasAny(['search', 'status', 'order_type']))
             <a href="{{ route('admin.orders.index') }}" class="text-sm text-ink-muted hover:text-ink">Clear</a>
@@ -55,7 +61,15 @@
                             <p>{{ $order->user->name }}</p>
                             <p class="text-xs text-ink-muted">+91 {{ $order->user->mobile }}</p>
                         </td>
-                        <td class="px-5 py-3 text-ink-muted">{{ $order->franchise?->name ?? '—' }}</td>
+                        <td class="px-5 py-3 text-ink-muted">
+                            @if ($order->franchise)
+                                {{ $order->franchise->name }}
+                            @elseif ($order->order_type === 'product')
+                                <span class="rounded bg-warning-50 px-1.5 py-0.5 text-xs font-medium text-warning-600">Awaiting assignment</span>
+                            @else
+                                &mdash;
+                            @endif
+                        </td>
                         <td class="px-5 py-3 text-xs">{{ ucfirst(str_replace('_', ' ', $order->order_type)) }}</td>
                         <td class="px-5 py-3 font-code">₹{{ number_format($order->total_amount, 2) }}</td>
                         <td class="px-5 py-3 text-xs">{{ ucfirst(str_replace('_', ' ', $order->status->value)) }}</td>

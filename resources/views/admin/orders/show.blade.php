@@ -12,7 +12,30 @@
         <div class="text-right">
             <p class="font-display text-lg font-semibold">₹{{ number_format($order->total_amount, 2) }}</p>
             <p class="text-xs text-ink-muted">{{ ucfirst(str_replace('_', ' ', $order->status->value)) }}</p>
+            @if ($order->invoice)
+                <a href="{{ route('admin.orders.invoice', $order) }}" class="mt-2 inline-block text-xs font-medium text-primary-500 hover:underline">Download invoice</a>
+            @endif
         </div>
+    </div>
+
+    @if (session('error'))
+        <div class="mb-6 rounded-lg border border-danger-200 bg-danger-50 px-4 py-3 text-sm text-danger-600">{{ session('error') }}</div>
+    @endif
+    @if (session('success'))
+        <div class="mb-6 rounded-lg border border-success-200 bg-success-50 px-4 py-3 text-sm text-success-600">{{ session('success') }}</div>
+    @endif
+
+    <div class="mb-6 rounded-xl border border-border bg-canvas-raised p-5">
+        <h2 class="mb-3 font-display font-semibold">Order status</h2>
+        <form method="POST" action="{{ route('admin.orders.status', $order) }}" class="flex items-center gap-2">
+            @csrf
+            <select name="new_status" class="flex-1 rounded-lg border border-border bg-canvas px-3 py-2 text-sm">
+                @foreach (['pending_payment', 'confirmed', 'preparing', 'ready_for_dispatch', 'out_for_delivery', 'delivered', 'picked_up', 'cancelled', 'refunded'] as $status)
+                    <option value="{{ $status }}" @selected($order->status->value === $status)>{{ ucfirst(str_replace('_', ' ', $status)) }}</option>
+                @endforeach
+            </select>
+            <button type="submit" class="rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white hover:bg-primary-600">Update status</button>
+        </form>
     </div>
 
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
@@ -92,7 +115,27 @@
 
             <div class="rounded-xl border border-border bg-canvas-raised p-5">
                 <h2 class="mb-3 font-display font-semibold">Franchise</h2>
-                <p class="text-sm">{{ $order->franchise?->name ?? 'No franchise (wallet top-up)' }}</p>
+                @if ($order->franchise)
+                    <p class="text-sm">{{ $order->franchise->name }}</p>
+                @elseif ($order->order_type === 'product')
+                    <p class="mb-3 text-sm font-medium text-warning-600">Awaiting assignment</p>
+                    @if (session('error'))
+                        <p class="mb-3 text-xs text-danger-600">{{ session('error') }}</p>
+                    @endif
+                    <form method="POST" action="{{ route('admin.orders.assign', $order) }}" class="flex items-center gap-2">
+                        @csrf
+                        <select name="franchise_id" required class="flex-1 rounded-lg border border-border bg-canvas px-3 py-2 text-sm">
+                            <option value="">Choose a franchise&hellip;</option>
+                            @foreach ($franchises as $franchise)
+                                <option value="{{ $franchise->id }}">{{ $franchise->name }}</option>
+                            @endforeach
+                        </select>
+                        <button type="submit" class="rounded-lg bg-primary-500 px-3 py-2 text-sm font-medium text-white hover:bg-primary-600">Assign</button>
+                    </form>
+                @else
+                    {{-- lab_test / appointment / wallet_topup - each has its own fulfillment entity chosen at booking time (a lab center, a hospital), not a franchise --}}
+                    <p class="text-sm text-ink-muted">Not applicable for this order type.</p>
+                @endif
             </div>
 
             @if ($order->address)
