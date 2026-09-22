@@ -65,13 +65,28 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
     <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
+    <style>
+        /* Guaranteed sidebar positioning, independent of the Tailwind
+           build - see the lg:sticky/lg:h-screen utility classes below,
+           which need a fresh `npm run build` to exist as compiled CSS
+           at all. This rule works immediately either way. */
+        @media (min-width: 1024px) {
+            #admin-sidebar {
+                position: sticky;
+                top: 0;
+                height: 100vh;
+                transform: none;
+            }
+        }
+    </style>
 </head>
 <body class="h-full font-body text-[15px] text-ink" x-data="{ mobileNavOpen: false }">
     <div class="min-h-full lg:grid lg:grid-cols-[16rem_1fr]">
 
         
         <aside
-            class="fixed inset-y-0 left-0 z-40 w-64 -translate-x-full bg-primary-700 text-white transition-transform lg:static lg:translate-x-0"
+            id="admin-sidebar"
+            class="fixed inset-y-0 left-0 z-40 w-64 -translate-x-full bg-primary-700 text-white transition-transform lg:sticky lg:top-0 lg:h-screen lg:translate-x-0"
             :class="{ '!translate-x-0': mobileNavOpen }"
         >
             <div class="flex h-16 items-center gap-2.5 px-6">
@@ -84,12 +99,12 @@
             </div>
 
             <nav class="mt-4 space-y-4 overflow-y-auto px-3 pb-6" style="max-height: calc(100vh - 8rem);">
-                <?php $__currentLoopData = $navSections; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $heading => $items): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $navSections; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $heading => $items): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
                     <div>
                         <p class="px-3 pb-1.5 text-[11px] font-semibold uppercase tracking-wider text-white/40"><?php echo e($heading); ?></p>
                         <div class="space-y-0.5">
-                            <?php $__currentLoopData = $items; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <?php if($item['live'] && Route::has($item['route'])): ?>
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $items; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($item['live'] && Route::has($item['route'])): ?>
                                     <a
                                         href="<?php echo e(route($item['route'])); ?>"
                                         class="flex items-center rounded-lg px-3 py-2 text-sm font-medium <?php echo e(request()->routeIs($item['active'] ?? $item['route']) ? 'bg-primary-600 text-white' : 'text-white/75 hover:bg-primary-600/60 hover:text-white'); ?>"
@@ -103,21 +118,21 @@
 
                                         <span class="rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide">Soon</span>
                                     </span>
-                                <?php endif; ?>
-                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
                         </div>
                     </div>
-                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
             </nav>
 
             <div class="absolute bottom-0 w-full border-t border-white/10 p-4">
                 <p class="px-2 text-xs text-white/50">
                     <?php echo e($isAdminPortal ? 'Admin Portal' : 'Franchise Portal'); ?>
 
-                    <?php if($user->franchise): ?>
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($user->franchise): ?>
                         · <?php echo e($user->franchise->name); ?>
 
-                    <?php endif; ?>
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                 </p>
             </div>
         </aside>

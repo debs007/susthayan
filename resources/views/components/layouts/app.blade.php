@@ -65,12 +65,27 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+        /* Guaranteed sidebar positioning, independent of the Tailwind
+           build - see the lg:sticky/lg:h-screen utility classes below,
+           which need a fresh `npm run build` to exist as compiled CSS
+           at all. This rule works immediately either way. */
+        @media (min-width: 1024px) {
+            #admin-sidebar {
+                position: sticky;
+                top: 0;
+                height: 100vh;
+                transform: none;
+            }
+        }
+    </style>
 </head>
 <body class="h-full font-body text-[15px] text-ink" x-data="{ mobileNavOpen: false }">
     <div class="min-h-full lg:grid lg:grid-cols-[16rem_1fr]">
 
         {{-- Sidebar --}}
         <aside
+            id="admin-sidebar"
             class="fixed inset-y-0 left-0 z-40 w-64 -translate-x-full bg-primary-700 text-white transition-transform lg:sticky lg:top-0 lg:h-screen lg:translate-x-0"
             :class="{ '!translate-x-0': mobileNavOpen }"
         >
