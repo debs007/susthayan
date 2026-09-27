@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Franchise\VerifyPrescriptionRequest;
 use App\Models\Prescription;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\Response;
 
 class PrescriptionVerificationController extends Controller
 {
@@ -40,5 +42,13 @@ class PrescriptionVerificationController extends Controller
         }
 
         return response()->json(['prescription' => $prescription]);
+    }
+
+    /** Same private-disk pattern as the web portal's equivalent - never a public URL, streamed only to an authenticated, role-checked pharmacist. */
+    public function show(Prescription $prescription): Response
+    {
+        abort_unless(Storage::disk('local')->exists($prescription->file_path), 404);
+
+        return response()->file(Storage::disk('local')->path($prescription->file_path));
     }
 }

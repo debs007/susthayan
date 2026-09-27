@@ -36,6 +36,19 @@ class OrderResource extends JsonResource
                 'scheduled_date' => $this->labTestBooking->scheduled_date?->toDateString(),
                 'status' => $this->labTestBooking->status,
             ] : null),
+            // Additive alongside lab_test_booking above, not a replacement -
+            // populated for every lab-test order (including a single-test
+            // one, as a one-item list) once the app requests this relation
+            // loaded. Lets a multi-test booking show every test, not just
+            // whichever one labTestBooking's HasOne happens to resolve to.
+            'lab_test_bookings' => $this->whenLoaded('labTestBookings', fn () => $this->labTestBookings->map(fn ($booking) => [
+                'test_name' => $booking->labTest?->name,
+                'center_name' => $booking->labCenter?->name,
+                'center_address' => $booking->labCenter?->fullAddress(),
+                'booking_type' => $booking->booking_type,
+                'scheduled_date' => $booking->scheduled_date?->toDateString(),
+                'status' => $booking->status,
+            ])),
             // Same pattern as lab_test_booking above - the equivalent for
             // order_type = 'appointment'. Without this, an appointment
             // order would hit the exact same "no item details" bug the

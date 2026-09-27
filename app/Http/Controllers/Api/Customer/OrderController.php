@@ -49,7 +49,7 @@ class OrderController extends Controller
     public function index(Request $request): AnonymousResourceCollection
     {
         $orders = Order::where('user_id', $request->user()->id)
-            ->with(['items.product', 'franchise', 'labTestBooking.labTest', 'labTestBooking.labCenter', 'appointmentBooking.doctor', 'appointmentBooking.hospital'])
+            ->with(['items.product', 'franchise', 'labTestBooking.labTest', 'labTestBooking.labCenter', 'labTestBookings.labTest', 'labTestBookings.labCenter', 'appointmentBooking.doctor', 'appointmentBooking.hospital'])
             ->latest()
             ->paginate(15);
 
@@ -60,7 +60,7 @@ class OrderController extends Controller
     {
         abort_unless($order->user_id === $request->user()->id, 403);
 
-        return new OrderResource($order->load(['items.product', 'items.batches', 'franchise', 'labTestBooking.labTest', 'labTestBooking.labCenter', 'appointmentBooking.doctor', 'appointmentBooking.hospital']));
+        return new OrderResource($order->load(['items.product', 'items.batches', 'franchise', 'labTestBooking.labTest', 'labTestBooking.labCenter', 'labTestBookings.labTest', 'labTestBookings.labCenter', 'appointmentBooking.doctor', 'appointmentBooking.hospital']));
     }
 
     public function downloadInvoice(Request $request, Order $order)

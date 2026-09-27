@@ -37,7 +37,15 @@
                     <tr>
                         <td class="px-5 py-3">
                             <p class="font-code text-xs font-medium">#HP-{{ $order->id }}</p>
-                            <p class="text-xs text-ink-muted">{{ $order->items->count() }} item{{ $order->items->count() === 1 ? '' : 's' }}</p>
+                            <p class="text-xs text-ink-muted">
+                                @if ($order->order_type === 'lab_test' && $order->labTestBookings->isNotEmpty())
+                                    {{ $order->labTestBookings->first()->labTest?->name ?? 'Lab test' }}{{ $order->labTestBookings->count() > 1 ? ' +'.($order->labTestBookings->count() - 1).' more' : '' }}
+                                @elseif ($order->order_type === 'appointment' && $order->appointmentBooking)
+                                    Dr. {{ $order->appointmentBooking->doctor?->name ?? '—' }}
+                                @else
+                                    {{ $order->items->count() }} item{{ $order->items->count() === 1 ? '' : 's' }}
+                                @endif
+                            </p>
                         </td>
                         <td class="px-5 py-3">
                             <span class="rounded-full bg-canvas px-2 py-0.5 text-xs font-medium capitalize text-ink-muted">{{ $order->fulfillment_type->value }}</span>

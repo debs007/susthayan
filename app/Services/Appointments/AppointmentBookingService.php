@@ -2,16 +2,21 @@
 
 namespace App\Services\Appointments;
 
+use App\Enums\PaymentStatus;
 use App\Models\AppointmentBooking;
+use App\Models\CustomerPayment;
 use App\Models\Doctor;
 use App\Models\DoctorHospitalAffiliation;
 use App\Models\Order;
 use App\Models\User;
+use App\Services\Payment\PaymentConfirmationService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class AppointmentBookingService
 {
+    public function __construct(private readonly PaymentConfirmationService $paymentConfirmation) {}
+
     /**
      * Same starting point as a product/lab-test order (pending_payment) -
      * "appointment booking should also be considered as order" is
@@ -65,7 +70,26 @@ class AppointmentBookingService
                 'status' => 'pending',
             ]);
 
-            return $order;
+            // Temporary: payments are off (config('services.payment.enabled')
+            // false) - same bypass CheckoutService and LabTestBookingService
+            // already apply, run through the exact same confirmation path.
+            if (! config('services.payment.enabled')) {
+                $payment = CustomerPayment::create([
+                    'order_id' => $order->id,
+                    'amount' => $order->total_amount,
+                    'gateway' => 'bypassed',
+                    'status' => PaymentStatus::Initiated,
+                ]);
+
+                $this->paymentConfirmation->markSuccessful($payment);
+            }
+
+            // Same reasoning as LabTestBookingService - markSuccessful()
+            // above updates the order via $payment->order, a separately
+            // lazy-loaded instance, so this $order variable's own
+            // in-memory status never reflects that update without an
+            // explicit refresh.
+            return $order->fresh();
         });
     }
 }

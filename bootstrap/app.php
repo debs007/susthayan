@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\EnsureFranchiseAccess;
+use App\Http\Middleware\RedirectIfAuthenticated;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -29,6 +30,12 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => RoleMiddleware::class,
             'permission' => PermissionMiddleware::class,
             'role_or_permission' => RoleOrPermissionMiddleware::class,
+            // Overrides Laravel's own framework-default 'guest' middleware,
+            // which redirects every already-authenticated visitor to one
+            // hardcoded destination regardless of role - wrong for a system
+            // with several genuinely different, role-gated dashboards. See
+            // the class itself for the full explanation.
+            'guest' => RedirectIfAuthenticated::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

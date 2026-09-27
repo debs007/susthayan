@@ -26,13 +26,13 @@ class LabTestBookingController extends Controller
      */
     public function store(CreateLabTestBookingRequest $request): JsonResponse
     {
-        $test = LabTest::findOrFail($request->validated('lab_test_id'));
+        $tests = LabTest::whereIn('id', $request->validated('lab_test_ids'))->get();
         $center = LabCenter::findOrFail($request->validated('lab_center_id'));
 
         try {
             $order = $this->bookings->book(
                 user: $request->user(),
-                test: $test,
+                tests: $tests,
                 center: $center,
                 scheduledDate: Carbon::parse($request->validated('scheduled_date')),
                 addressId: $request->validated('address_id'),
@@ -41,7 +41,7 @@ class LabTestBookingController extends Controller
             return response()->json(['message' => $e->getMessage()], 409);
         }
 
-        return (new OrderResource($order->load(['franchise', 'labTestBooking.labTest', 'labTestBooking.labCenter'])))->response()->setStatusCode(201);
+        return (new OrderResource($order->load(['franchise', 'labTestBooking.labTest', 'labTestBooking.labCenter', 'labTestBookings.labTest', 'labTestBookings.labCenter'])))->response()->setStatusCode(201);
     }
 
     public function index(Request $request): JsonResponse

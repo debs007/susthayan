@@ -65,6 +65,8 @@ class OrderController extends Controller
             'deliveryAssignments.deliveryAgent',
             'labTestBooking.labTest',
             'labTestBooking.labCenter',
+            'labTestBookings.labTest',
+            'labTestBookings.labCenter',
             'appointmentBooking.doctor',
             'appointmentBooking.hospital',
         ]);

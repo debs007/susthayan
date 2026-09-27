@@ -119,6 +119,10 @@ Route::prefix('customer')->middleware(['auth:sanctum', 'role:Customer'])->group(
 
     Route::get('/lab-tests', [CustomerLabTestController::class, 'index']);
     Route::get('/lab-tests/blocked-dates', [CustomerLabTestController::class, 'blockedDates']);
+    // POST despite being a pure read/query - an array of test ids is
+    // simpler and more reliable to send as a body than as query-string
+    // array params.
+    Route::post('/lab-tests/centers-for-multiple', [CustomerLabTestController::class, 'centersForTests']);
     Route::get('/lab-tests/{labTest}', [CustomerLabTestController::class, 'show']);
     Route::get('/lab-tests/{labTest}/centers', [CustomerLabTestController::class, 'centers']);
     Route::post('/lab-test-bookings', [LabTestBookingController::class, 'store']);
@@ -182,10 +186,12 @@ Route::prefix('franchise')
         Route::get('/orders', [OrderFulfillmentController::class, 'index']);
         Route::post('/orders/{order}/status', [OrderFulfillmentController::class, 'updateStatus']);
         Route::get('/delivery-assignments', [DeliveryAssignmentController::class, 'index']);
+        Route::get('/delivery-agents', [DeliveryAssignmentController::class, 'agents']);
         Route::post('/orders/{order}/assign-delivery', [DeliveryAssignmentController::class, 'store']);
 
         Route::middleware('role:Pharmacist')->group(function () {
             Route::get('/prescriptions', [PrescriptionVerificationController::class, 'index']);
+            Route::get('/prescriptions/{prescription}/file', [PrescriptionVerificationController::class, 'show']);
             Route::post('/prescriptions/{prescription}/verify', [PrescriptionVerificationController::class, 'verify']);
         });
 

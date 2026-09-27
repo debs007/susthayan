@@ -21,6 +21,7 @@ use App\Http\Controllers\Web\Admin\LabTestBlockedDateController;
 use App\Http\Controllers\Web\Admin\LabTestCategoryController;
 use App\Http\Controllers\Web\Admin\LabTestController;
 use App\Http\Controllers\Web\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\Web\Admin\ProductImportController;
 use App\Http\Controllers\Web\Admin\ReportController as AdminReportController;
 use App\Http\Controllers\Web\Admin\SettlementController as AdminSettlementController;
 use App\Http\Controllers\Web\Admin\SupplierController as AdminSupplierController;
@@ -170,6 +171,12 @@ Route::middleware('auth:web')->group(function () {
             Route::post('/products/{product}/prices', [AdminProductController::class, 'storePrice'])->name('products.prices.store');
             Route::post('/products/{product}/image', [AdminProductController::class, 'uploadImage'])->name('products.image.upload');
             Route::delete('/products/{product}/image', [AdminProductController::class, 'removeImage'])->name('products.image.remove');
+
+            Route::get('/products-import', [ProductImportController::class, 'index'])->name('products.import.index');
+            Route::get('/products-import/create', [ProductImportController::class, 'create'])->name('products.import.create');
+            Route::post('/products-import', [ProductImportController::class, 'store'])->name('products.import.store');
+            Route::get('/products-import/{import}/status', [ProductImportController::class, 'status'])->name('products.import.status');
+            Route::delete('/products-import/{import}', [ProductImportController::class, 'destroy'])->name('products.import.destroy');
 
             Route::get('/brands', [BrandController::class, 'index'])->name('brands.index');
             Route::post('/brands', [BrandController::class, 'store'])->name('brands.store');

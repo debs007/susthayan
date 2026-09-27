@@ -50,6 +50,16 @@
                         </div>
                     @endforeach
                 </div>
+            @elseif ($order->order_type === 'lab_test' && $order->labTestBookings->isNotEmpty())
+                <div class="rounded-xl border border-border bg-canvas-raised p-5">
+                    <h2 class="mb-3 font-display font-semibold">Lab Test Details</h2>
+                    @foreach ($order->labTestBookings as $booking)
+                        <p class="font-medium">{{ $booking->labTest?->name ?? '—' }}</p>
+                    @endforeach
+                    {{-- Every test in one booking shares the same center, date, and status - shown once. --}}
+                    <p class="text-sm text-ink-muted mt-2">{{ $order->labTestBookings->first()->labCenter?->name ?? '—' }}</p>
+                    <p class="text-sm text-ink-muted">Scheduled: {{ $order->labTestBookings->first()->scheduled_date->format('d M Y') }} &bull; {{ ucfirst($order->labTestBookings->first()->status) }}</p>
+                </div>
             @elseif ($order->order_type === 'lab_test' && $order->labTestBooking)
                 <div class="rounded-xl border border-border bg-canvas-raised p-5">
                     <h2 class="mb-3 font-display font-semibold">Lab Test Details</h2>

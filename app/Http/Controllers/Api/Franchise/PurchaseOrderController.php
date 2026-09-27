@@ -30,7 +30,7 @@ class PurchaseOrderController extends Controller
     public function show(PurchaseOrder $purchaseOrder): PurchaseOrderResource
     {
         return new PurchaseOrderResource(
-            $purchaseOrder->load(['supplier', 'items.product', 'goodsReceipts.items.product'])
+            $purchaseOrder->load(['supplier', 'items.product', 'goodsReceipts.items.product', 'invoices.payments'])
         );
     }
 

@@ -69,8 +69,10 @@
                     <tr>
                         <td class="px-5 py-3 font-code font-medium">#<?php echo e($order->id); ?></td>
                         <td class="px-5 py-3">
-                            <p><?php echo e($order->user->name); ?></p>
-                            <p class="text-xs text-ink-muted">+91 <?php echo e($order->user->mobile); ?></p>
+                            <p><?php echo e($order->user?->name ?? 'Unknown customer'); ?></p>
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($order->user?->mobile): ?>
+                                <p class="text-xs text-ink-muted">+91 <?php echo e($order->user->mobile); ?></p>
+                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </td>
                         <td class="px-5 py-3 text-ink-muted">
                             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($order->franchise): ?>

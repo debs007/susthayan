@@ -17,7 +17,7 @@ class Order extends Model
     use HasFactory, LogsActivity;
 
     protected $fillable = [
-        'user_id', 'franchise_id', 'address_id', 'fulfillment_type', 'status',
+        'order_type', 'user_id', 'franchise_id', 'address_id', 'fulfillment_type', 'status',
         'walk_in_customer_name', 'walk_in_customer_phone', 'prescription_note',
         'subtotal_amount', 'discount_amount', 'tax_amount', 'delivery_charge',
         'total_amount', 'requires_prescription', 'confirmed_at', 'prepared_at',
@@ -68,6 +68,19 @@ class Order extends Model
     public function labTestBooking(): HasOne
     {
         return $this->hasOne(LabTestBooking::class);
+    }
+
+    /**
+     * Additive alongside labTestBooking() above, not a replacement - that
+     * HasOne is already relied on by the web storefront's order history,
+     * the web admin order view, and the existing API response shape, so
+     * it stays exactly as-is. This is the same lab_test_bookings table,
+     * just the full list rather than one row - what a multi-test booking
+     * actually needs, since several rows can now share one order_id.
+     */
+    public function labTestBookings(): HasMany
+    {
+        return $this->hasMany(LabTestBooking::class);
     }
 
     /** Same pattern as labTestBooking() - the appointment equivalent, null for a product or lab-test order. */

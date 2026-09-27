@@ -8,6 +8,8 @@
 <?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
 <?php endif; ?>
 <?php $component->withAttributes(['title' => 'Customers']); ?>
+<?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::processComponentKey($component); ?>
+
     <div class="mb-6">
         <h1 class="font-display text-lg font-semibold">Customers</h1>
         <p class="text-sm text-ink-muted">Every registered app customer - tap a row for their full profile, order history, and health data.</p>
@@ -16,9 +18,9 @@
     <form method="GET" class="mb-5 flex gap-3">
         <input type="text" name="search" value="<?php echo e(request('search')); ?>" placeholder="Search by name or mobile number" class="w-full max-w-sm rounded-lg border border-border px-3 py-2 text-sm">
         <button type="submit" class="rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white hover:bg-primary-600">Search</button>
-        <?php if(request('search')): ?>
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(request('search')): ?>
             <a href="<?php echo e(route('admin.customers.index')); ?>" class="rounded-lg border border-border px-4 py-2 text-sm text-ink-muted hover:bg-canvas">Clear</a>
-        <?php endif; ?>
+        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
     </form>
 
     <div class="rounded-xl border border-border bg-canvas-raised">
@@ -33,7 +35,7 @@
                 </tr>
             </thead>
             <tbody class="divide-y divide-border">
-                <?php $__empty_1 = true; $__currentLoopData = $customers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $customer): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = $customers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $customer): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
                     <tr>
                         <td class="px-5 py-3 font-medium"><?php echo e($customer->name); ?></td>
                         <td class="px-5 py-3 font-code text-ink-muted">+91 <?php echo e($customer->mobile); ?></td>
@@ -43,11 +45,11 @@
                             <a href="<?php echo e(route('admin.customers.show', $customer)); ?>" class="text-xs font-medium text-primary-500 hover:text-primary-600">View Details →</a>
                         </td>
                     </tr>
-                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
                     <tr>
                         <td colspan="5" class="px-5 py-12 text-center text-ink-muted">No customers <?php echo e(request('search') ? 'match that search' : 'yet'); ?>.</td>
                     </tr>
-                <?php endif; ?>
+                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
             </tbody>
         </table>
     </div>

@@ -5,13 +5,68 @@ namespace App\Http\Controllers\Api\Customer;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\LabCenterResource;
 use App\Http\Resources\LabTestResource;
+use App\Models\LabCenter;
 use App\Models\LabTest;
 use App\Models\LabTestBlockedDate;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class LabTestController extends Controller
 {
+    /**
+     * The multi-test equivalent of centers() below - a center that
+     * qualifies for a batch booking has to offer every selected test,
+     * not just one of them. Chaining whereHas() once per test id (rather
+     * than a single whereIn) is what makes this a genuine intersection:
+     * each call is its own EXISTS subquery, and Eloquent AND-combines
+     * chained where clauses, so a center only matches if every one of
+     * those subqueries finds a row.
+     */
+    public function centersForTests(Request $request): JsonResponse
+    {
+        $request->validate([
+            'test_ids' => ['required', 'array', 'min:1'],
+            'test_ids.*' => ['integer', Rule::exists('lab_tests', 'id')],
+        ]);
+
+        $testIds = $request->input('test_ids');
+        $tests = LabTest::whereIn('id', $testIds)->get();
+
+        // Same reasoning as fulfillment_type in LabTestBookingService -
+        // if any selected test needs a center visit, only centers that
+        // don't also require home-collection support still qualify;
+        // if any test is home-collection eligible, the center has to
+        // actually offer that.
+        $anyHomeCollectionEligible = $tests->contains(fn (LabTest $test) => ! $test->requires_center_visit);
+
+        $query = LabCenter::where('is_active', true)
+            ->when($anyHomeCollectionEligible, fn ($q) => $q->where('offers_home_collection', true));
+
+        foreach ($testIds as $testId) {
+            $query->whereHas('tests', fn ($q) => $q->where('lab_tests.id', $testId));
+        }
+
+        $centers = $query->with(['tests' => fn ($q) => $q->whereIn('lab_tests.id', $testIds)])->get();
+
+        $data = $centers->map(function (LabCenter $center) {
+            return [
+                ...(new LabCenterResource($center))->resolve(),
+                // The one number the app actually needs here - every
+                // selected test's price at this specific center, summed.
+                // Each test's own pivot price is still available too, for
+                // a line-by-line breakdown if the app wants to show one.
+                'total_price' => (string) $center->tests->sum(fn ($test) => (float) $test->pivot->price),
+                'test_prices' => $center->tests->map(fn ($test) => [
+                    'lab_test_id' => $test->id,
+                    'price' => (string) $test->pivot->price,
+                ]),
+            ];
+        });
+
+        return response()->json(['data' => $data]);
+    }
+
     public function index(Request $request): JsonResponse
     {
         $tests = LabTest::with('category')

@@ -58,8 +58,10 @@
                     <tr>
                         <td class="px-5 py-3 font-code font-medium">#{{ $order->id }}</td>
                         <td class="px-5 py-3">
-                            <p>{{ $order->user->name }}</p>
-                            <p class="text-xs text-ink-muted">+91 {{ $order->user->mobile }}</p>
+                            <p>{{ $order->user?->name ?? 'Unknown customer' }}</p>
+                            @if ($order->user?->mobile)
+                                <p class="text-xs text-ink-muted">+91 {{ $order->user->mobile }}</p>
+                            @endif
                         </td>
                         <td class="px-5 py-3 text-ink-muted">
                             @if ($order->franchise)

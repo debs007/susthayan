@@ -40,13 +40,13 @@ unset($__defined_vars, $__key, $__value); ?>
     <button type="submit" class="rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white hover:bg-primary-600">
         Apply
     </button>
-    <?php if($csvAction): ?>
+    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($csvAction): ?>
         <a
             href="<?php echo e($csvAction); ?>&from=<?php echo e($from); ?>&to=<?php echo e($to); ?>"
             class="ml-auto rounded-lg border border-border px-4 py-2 text-sm font-medium text-ink hover:bg-canvas"
         >
             ↓ Export CSV
         </a>
-    <?php endif; ?>
+    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 </form>
 <?php /**PATH /var/www/susthayan/susthayan/resources/views/components/reports/date-filter.blade.php ENDPATH**/ ?>

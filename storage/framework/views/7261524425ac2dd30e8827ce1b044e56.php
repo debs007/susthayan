@@ -8,15 +8,17 @@
 <?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
 <?php endif; ?>
 <?php $component->withAttributes(['title' => 'Dashboard']); ?>
+<?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::processComponentKey($component); ?>
+
     <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <div class="rounded-xl border border-border bg-canvas-raised p-5">
             <p class="text-sm text-ink-muted">Today's revenue</p>
             <p class="mt-1.5 font-display text-3xl font-semibold">₹<?php echo e(number_format($todaysRevenue, 0)); ?></p>
-            <?php if($revenueChangePercent !== null): ?>
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($revenueChangePercent !== null): ?>
                 <p class="mt-1 text-xs <?php echo e($revenueChangePercent >= 0 ? 'text-success-600' : 'text-danger-500'); ?>">
                     <?php echo e($revenueChangePercent >= 0 ? '↑' : '↓'); ?> <?php echo e(abs($revenueChangePercent)); ?>% vs. yesterday
                 </p>
-            <?php endif; ?>
+            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
         </div>
         <div class="rounded-xl border border-border bg-canvas-raised p-5">
             <p class="text-sm text-ink-muted">Orders today</p>
@@ -26,9 +28,9 @@
         <div class="rounded-xl border border-border bg-canvas-raised p-5">
             <p class="text-sm text-ink-muted">Pending prescriptions</p>
             <p class="mt-1.5 font-display text-3xl font-semibold <?php echo e($pendingPrescriptions > 0 ? 'text-honey-600' : ''); ?>"><?php echo e($pendingPrescriptions); ?></p>
-            <?php if($pendingPrescriptions > 0): ?>
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($pendingPrescriptions > 0): ?>
                 <p class="mt-1 text-xs text-honey-600">Needs review</p>
-            <?php endif; ?>
+            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
         </div>
         <div class="rounded-xl border border-border bg-canvas-raised p-5">
             <p class="text-sm text-ink-muted">Delivery success rate</p>
@@ -55,7 +57,7 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-border">
-                        <?php $__empty_1 = true; $__currentLoopData = $recentOrders; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $order): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = $recentOrders; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $order): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
                             <tr>
                                 <td class="px-5 py-3 font-code text-xs font-medium">#HP-<?php echo e($order->id); ?></td>
                                 <td class="px-5 py-3"><?php echo e($order->user?->name ?? $order->walk_in_customer_name ?? 'Walk-in'); ?></td>
@@ -65,21 +67,21 @@
                                     <span class="rounded-full bg-canvas px-2 py-0.5 text-xs font-medium capitalize text-ink-muted"><?php echo e(str_replace('_', ' ', $order->status->value)); ?></span>
                                 </td>
                             </tr>
-                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
                             <tr>
                                 <td colspan="5" class="px-5 py-8 text-center text-ink-muted">No orders yet.</td>
                             </tr>
-                        <?php endif; ?>
+                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </tbody>
                 </table>
             </div>
 
             <div class="rounded-xl border border-border bg-canvas-raised p-5">
                 <h2 class="mb-4 font-display font-semibold">Hourly orders today</h2>
-                <?php if($hourlyOrders->sum() > 0): ?>
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($hourlyOrders->sum() > 0): ?>
                     <?php $peak = max($hourlyOrders->max(), 1); ?>
                     <div class="flex h-32 items-end gap-1">
-                        <?php $__currentLoopData = $hourlyOrders; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $hour => $count): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $hourlyOrders; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $hour => $count): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
                             <div class="group relative flex-1">
                                 <div
                                     class="rounded-t bg-primary-500/70 transition-all group-hover:bg-primary-500"
@@ -90,14 +92,14 @@
 
                                 </div>
                             </div>
-                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
                     </div>
                     <div class="mt-2 flex justify-between text-[10px] text-ink-muted">
                         <span>12am</span><span>6am</span><span>12pm</span><span>6pm</span><span>now</span>
                     </div>
                 <?php else: ?>
                     <p class="py-8 text-center text-sm text-ink-muted">No orders yet today.</p>
-                <?php endif; ?>
+                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
             </div>
         </div>
 
@@ -106,14 +108,14 @@
                 <h2 class="font-display font-semibold">Recent activity</h2>
             </div>
             <div class="divide-y divide-border">
-                <?php $__empty_1 = true; $__currentLoopData = $recentActivity; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = $recentActivity; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
                     <div class="px-5 py-3 text-sm">
                         <p><?php echo e($item['message']); ?></p>
                         <p class="mt-0.5 text-xs text-ink-muted"><?php echo e($item['timestamp']->diffForHumans()); ?></p>
                     </div>
-                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
                     <p class="px-5 py-8 text-center text-sm text-ink-muted">Nothing to show yet.</p>
-                <?php endif; ?>
+                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
             </div>
         </div>
     </div>

@@ -7,12 +7,23 @@ use App\Http\Requests\Franchise\AssignDeliveryRequest;
 use App\Http\Resources\DeliveryAssignmentResource;
 use App\Models\DeliveryAssignment;
 use App\Models\Order;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class DeliveryAssignmentController extends Controller
 {
+    /** Same query the web portal already uses inline for its own assign-delivery dropdown - exposed here as a real endpoint for the app. */
+    public function agents(Request $request): JsonResponse
+    {
+        $agents = User::where('franchise_id', $request->user()->franchise_id)
+            ->whereHas('roles', fn ($q) => $q->where('name', 'Delivery Agent'))
+            ->get(['id', 'name']);
+
+        return response()->json(['agents' => $agents]);
+    }
+
     public function index(Request $request): AnonymousResourceCollection
     {
         $assignments = DeliveryAssignment::whereHas(

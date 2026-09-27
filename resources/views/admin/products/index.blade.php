@@ -18,6 +18,9 @@
             <a href="{{ route('admin.categories.index') }}" class="rounded-lg border border-border px-4 py-2 text-sm font-medium text-ink hover:bg-canvas">
                 Manage categories
             </a>
+            <a href="{{ route('admin.products.import.create') }}" class="rounded-lg border border-border px-4 py-2 text-sm font-medium text-ink hover:bg-canvas">
+                Bulk upload
+            </a>
             <a href="{{ route('admin.products.create') }}" class="rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white hover:bg-primary-600">
                 + Add product
             </a>

@@ -23,7 +23,7 @@ class OrderController extends Controller
         $orders = Order::where('franchise_id', $request->user()->franchise_id)
             ->whereNotIn('status', ['pending_payment'])
             ->when($request->filled('status'), fn ($q) => $q->where('status', $request->string('status')))
-            ->with(['items.product', 'deliveryAssignments'])
+            ->with(['items.product', 'deliveryAssignments', 'labTestBookings.labTest', 'labTestBookings.labCenter', 'appointmentBooking.doctor', 'appointmentBooking.hospital'])
             ->latest()
             ->paginate(20)
             ->withQueryString();
