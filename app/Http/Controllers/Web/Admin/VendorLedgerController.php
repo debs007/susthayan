@@ -27,4 +27,17 @@ class VendorLedgerController extends Controller
 
         return view('admin.vendors.ledger', compact('supplier', 'ledger'));
     }
+
+    /** Read-only - admin has oversight here, not creation or action, same framing as the outstanding list this links from. */
+    public function show(PurchaseOrder $purchaseOrder): View
+    {
+        $purchaseOrder->load([
+            'supplier', 'franchise', 'createdBy', 'approvedBy',
+            'items.product',
+            'goodsReceipts.items', 'goodsReceipts.receivedBy',
+            'invoices.payments',
+        ]);
+
+        return view('admin.vendors.purchase-order-show', compact('purchaseOrder'));
+    }
 }

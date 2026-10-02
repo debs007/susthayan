@@ -31,28 +31,36 @@ unset($__defined_vars, $__key, $__value); ?>
 <?php
     $price = $product->resolved_price ?? null;
     $hasDiscount = $price && (float) $price->mrp > (float) $price->selling_price;
-    $inStock = ($product->resolved_stock ?? 0) > 0;
+    // Every catalogued product is always purchasable - a franchise's stock
+    // (or lack of it) is a fulfillment-side concern handled after the
+    // order is placed, not a reason to block the customer from ordering
+    // it.
+    $inStock = true;
 ?>
 
-<div class="group flex flex-col overflow-hidden rounded-2xl border border-line bg-surface transition-shadow hover:shadow-md">
-    <a href="<?php echo e(route('storefront.products.show', $product)); ?>" wire:navigate class="block aspect-square bg-mist/40 p-4">
-        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($product->image_url): ?>
-            <img src="<?php echo e($product->image_url); ?>" alt="<?php echo e($product->name); ?>" class="h-full w-full object-contain" loading="lazy">
-        <?php else: ?>
-            <div class="flex h-full items-center justify-center text-ink-faint text-sm">No image</div>
-        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+<div class="group flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-surface transition-shadow hover:shadow-md">
+    
+    <a href="<?php echo e(route('storefront.products.show', $product)); ?>" wire:navigate class="block">
+        <div class="aspect-square w-full shrink-0 bg-surface p-4">
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($product->image_url): ?>
+                <img src="<?php echo e($product->image_url); ?>" alt="<?php echo e($product->name); ?>" class="h-full w-full object-contain" loading="lazy">
+            <?php else: ?>
+                <div class="flex h-full items-center justify-center text-ink-faint text-sm">No image</div>
+            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+        </div>
     </a>
     <div class="flex flex-1 flex-col gap-1 p-4">
-        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($product->prescription_required): ?>
-            <span class="w-fit rounded-full bg-warning/10 px-2 py-0.5 text-[11px] font-medium text-warning">Rx required</span>
-        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-        <a href="<?php echo e(route('storefront.products.show', $product)); ?>" wire:navigate class="line-clamp-2 text-sm font-medium text-ink hover:text-brand">
+        <div class="h-5">
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($product->prescription_required): ?>
+                <span class="w-fit rounded-full bg-warning/10 px-2 py-0.5 text-[11px] font-medium text-warning">Rx required</span>
+            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+        </div>
+        
+        <a href="<?php echo e(route('storefront.products.show', $product)); ?>" wire:navigate class="line-clamp-2 min-h-[2.5rem] text-sm font-medium text-ink hover:text-brand">
             <?php echo e($product->name); ?>
 
         </a>
-        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($product->unit): ?>
-            <p class="text-xs text-ink-faint"><?php echo e($product->unit); ?></p>
-        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+        <p class="h-4 text-xs text-ink-faint"><?php echo e($product->unit); ?></p>
         <div class="mt-auto flex items-baseline gap-2 pt-2">
             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($price): ?>
                 <span class="font-semibold text-ink">₹<?php echo e($price->selling_price); ?></span>

@@ -40,7 +40,7 @@ class CustomerController extends Controller
             'addresses',
             'wallet',
             'orders' => fn ($q) => $q->latest()->limit(20),
-            'prescriptions' => fn ($q) => $q->latest()->limit(20),
+            'prescriptions' => fn ($q) => $q->with('medicines')->latest()->limit(20),
             'vitals' => fn ($q) => $q->latest()->limit(20),
             'healthRecords' => fn ($q) => $q->latest()->limit(20),
             'appointmentBookings' => fn ($q) => $q->with('doctor', 'hospital')->latest('scheduled_date')->limit(20),

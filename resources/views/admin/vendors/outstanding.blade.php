@@ -52,8 +52,10 @@
                 </thead>
                 <tbody class="divide-y divide-border">
                     @forelse ($recentPurchaseOrders as $po)
-                        <tr>
-                            <td class="px-5 py-3 font-medium">{{ $po->supplier->name }}</td>
+                        <tr class="cursor-pointer hover:bg-canvas" onclick="window.location='{{ route('admin.purchase-orders.show', $po) }}'">
+                            <td class="px-5 py-3 font-medium">
+                                <a href="{{ route('admin.purchase-orders.show', $po) }}" class="hover:underline">{{ $po->supplier->name }}</a>
+                            </td>
                             <td class="px-5 py-3 text-ink-muted">{{ $po->franchise->name }}</td>
                             <td class="px-5 py-3">
                                 <span class="rounded-full bg-canvas px-2 py-0.5 text-xs font-medium capitalize text-ink-muted">

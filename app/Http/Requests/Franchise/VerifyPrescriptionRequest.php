@@ -16,6 +16,8 @@ class VerifyPrescriptionRequest extends FormRequest
         return [
             'status' => ['required', 'in:approved,rejected'],
             'rejection_reason' => ['required_if:status,rejected', 'nullable', 'string', 'max:500'],
+            'medicines' => ['nullable', 'array'],
+            'medicines.*' => ['required', 'string', 'max:255'],
         ];
     }
 }

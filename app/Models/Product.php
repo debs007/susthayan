@@ -63,6 +63,11 @@ class Product extends Model
         return $this->hasMany(OrderItem::class);
     }
 
+    public function cartItems(): HasMany
+    {
+        return $this->hasMany(CartItem::class);
+    }
+
     /** Resolve the effective selling price for a given franchise (falls back to the global price). */
     public function priceFor(?int $franchiseId): ?ProductPrice
     {

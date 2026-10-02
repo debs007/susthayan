@@ -22,7 +22,10 @@ class OrderResource extends JsonResource
             'customer' => $this->fulfillment_type->value === 'pos' ? [
                 'walk_in_name' => $this->walk_in_customer_name,
                 'walk_in_phone' => $this->walk_in_customer_phone,
-            ] : null,
+            ] : $this->whenLoaded('user', fn () => $this->user ? [
+                'name' => $this->user->name,
+                'mobile' => $this->user->mobile,
+            ] : null),
             'items' => OrderItemResource::collection($this->whenLoaded('items')),
             // Populated only for order_type = 'lab_test' - the equivalent
             // of 'items' above for a product order. A lab test order has

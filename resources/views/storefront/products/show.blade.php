@@ -11,7 +11,7 @@
         </nav>
 
         <div class="grid grid-cols-1 gap-10 md:grid-cols-2">
-            <div class="aspect-square rounded-2xl bg-mist/40 p-8">
+            <div class="aspect-square rounded-2xl bg-surface p-8">
                 @if ($product->image_url)
                     <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="h-full w-full object-contain">
                 @else
@@ -48,12 +48,11 @@
                     @endif
                 </div>
 
-                @if (($product->resolved_stock ?? 0) <= 0)
-                    <p class="mt-2 text-sm font-medium text-danger">Currently out of stock</p>
-                @endif
-
                 <div class="mt-6 max-w-xs">
-                    @livewire('storefront.add-to-cart', ['productId' => $product->id, 'inStock' => ($product->resolved_stock ?? 0) > 0], key('add-to-cart-detail-'.$product->id))
+                    {{-- Every catalogued product is always purchasable - a
+                         franchise's stock is a fulfillment-side concern
+                         handled after the order is placed. --}}
+                    @livewire('storefront.add-to-cart', ['productId' => $product->id, 'inStock' => true], key('add-to-cart-detail-'.$product->id))
                 </div>
 
                 @if ($product->manufacturer)

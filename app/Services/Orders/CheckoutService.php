@@ -10,6 +10,7 @@ use App\Models\CustomerPayment;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Prescription;
+use App\Models\Product;
 use App\Models\User;
 use App\Services\Invoicing\InvoiceService;
 use App\Services\Payment\PaymentConfirmationService;
@@ -42,9 +43,10 @@ class CheckoutService
      *   checkout here ("No price configured") - every sellable product
      *   needs one now, not just franchise-specific overrides.
      * - Stock is NOT checked at all at this stage, since there's no
-     *   franchise to check it against. That check now happens when an
-     *   admin assigns a franchise (see OrderAssignmentController), not
-     *   here at order creation.
+     *   franchise to check it against. Best-effort reservation happens
+     *   when an admin assigns a franchise (see Admin\OrderController::
+     *   assign()) - not a hard check, since assignment itself is never
+     *   blocked by stock; see StockService::reserveQuantity().
      */
     public function placeOrder(User $user, Cart $cart, string $fulfillmentType, ?int $addressId): Order
     {
@@ -157,6 +159,89 @@ class CheckoutService
                 // rendering reads the order live rather than a snapshot.
                 $this->invoices->generateFor($order->fresh());
             }
+
+            return $order->fresh(['items.product']);
+        });
+    }
+
+    /**
+     * $items is a list of ['product_id' => int, 'quantity' => int] -
+     * admin's own matching of the pharmacist's transcribed medicine
+     * names to actual catalogue products, with quantities. This is never
+     * routed through a payment gateway at all - it's an admin directly
+     * creating a confirmed order on the customer's behalf from an
+     * already-approved prescription, not a customer checking out - so
+     * unlike placeOrder() above, there's no PAYMENT_ENABLED check to
+     * make here; this flow was never going to touch a gateway either way.
+     */
+    public function placeOrderFromPrescription(
+        User $user,
+        Prescription $prescription,
+        array $items,
+        string $fulfillmentType,
+        ?int $addressId,
+    ): Order {
+        if ($items === []) {
+            throw new RuntimeException('At least one item is required.');
+        }
+
+        return DB::transaction(function () use ($user, $prescription, $items, $fulfillmentType, $addressId) {
+            $order = Order::create([
+                'user_id' => $user->id,
+                'franchise_id' => null,
+                'address_id' => $addressId,
+                'fulfillment_type' => $fulfillmentType,
+                'status' => OrderStatus::PendingPayment,
+                'requires_prescription' => true,
+            ]);
+
+            $subtotal = 0;
+            $tax = 0;
+
+            foreach ($items as $item) {
+                $product = Product::findOrFail($item['product_id']);
+                $price = $product->priceFor(null);
+
+                if (! $price) {
+                    throw new RuntimeException("No price configured for product #{$product->id}.");
+                }
+
+                $lineSubtotal = $price->selling_price * $item['quantity'];
+                $lineTax = round((float) ($lineSubtotal * $price->tax_percentage / 100), 2);
+
+                OrderItem::create([
+                    'order_id' => $order->id,
+                    'product_id' => $product->id,
+                    'quantity' => $item['quantity'],
+                    'unit_price' => $price->selling_price,
+                    'tax_percentage' => $price->tax_percentage,
+                    'total_price' => $lineSubtotal + $lineTax,
+                ]);
+
+                $subtotal += $lineSubtotal;
+                $tax += $lineTax;
+            }
+
+            $order->update([
+                'subtotal_amount' => $subtotal,
+                'discount_amount' => 0,
+                'tax_amount' => $tax,
+                'total_amount' => $subtotal + $tax,
+            ]);
+
+            $prescription->update(['order_id' => $order->id]);
+
+            // Always confirms immediately - see the method doc above for
+            // why PAYMENT_ENABLED doesn't apply to this flow at all.
+            $payment = CustomerPayment::create([
+                'order_id' => $order->id,
+                'amount' => $order->total_amount,
+                'gateway' => 'admin_prescription_order',
+                'status' => PaymentStatus::Initiated,
+            ]);
+
+            $this->paymentConfirmation->markSuccessful($payment);
+            $this->invoices->generateFor($order->fresh());
 
             return $order->fresh(['items.product']);
         });

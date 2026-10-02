@@ -8,7 +8,7 @@
 
     <form
         method="POST" action="{{ route('franchise.purchase-orders.store') }}"
-        x-data="{ items: [{ product_id: '', ordered_qty: 1, expected_rate: '' }] }"
+        x-data='{ items: @json(count($prefillItems) ? $prefillItems : [['product_id' => '', 'ordered_qty' => 1, 'expected_rate' => '']]) }'
         class="max-w-3xl space-y-6 rounded-xl border border-border bg-canvas-raised p-6"
     >
         @csrf

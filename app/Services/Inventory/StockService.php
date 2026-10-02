@@ -127,6 +127,14 @@ class StockService
         });
     }
 
+    /**
+     * Best-effort: reserves whatever quantity is actually available and
+     * leaves the rest unreserved rather than throwing. An order can now
+     * be assigned to a franchise that doesn't fully stock every item
+     * (see Admin\OrderController::assign()), so a shortfall here is
+     * expected and normal, not an error to unwind the whole assignment
+     * over - the franchise's own order view is what surfaces it.
+     */
     private function reserveQuantity(int $franchiseId, int $productId, int $quantity): void
     {
         $batches = Inventory::fefoFor($franchiseId, $productId)->lockForUpdate()->get();
@@ -143,10 +151,6 @@ class StockService
                 $batch->increment('reserved_quantity', $take);
                 $remaining -= $take;
             }
-        }
-
-        if ($remaining > 0) {
-            throw new InsufficientStockException($productId, $quantity, $quantity - $remaining);
         }
     }
 

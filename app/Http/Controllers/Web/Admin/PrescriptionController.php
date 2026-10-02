@@ -19,7 +19,7 @@ class PrescriptionController extends Controller
      */
     public function index(Request $request): View
     {
-        $prescriptions = Prescription::with(['user:id,name,mobile', 'verifiedBy:id,name'])
+        $prescriptions = Prescription::with(['user:id,name,mobile', 'verifiedBy:id,name', 'medicines'])
             ->when($request->filled('status'), fn ($q) => $q->where('verification_status', $request->string('status')))
             ->latest()
             ->paginate(30)

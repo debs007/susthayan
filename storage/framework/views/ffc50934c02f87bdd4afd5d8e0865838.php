@@ -36,6 +36,15 @@
             <a href="<?php echo e(route('admin.products.create')); ?>" class="rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white hover:bg-primary-600">
                 + Add product
             </a>
+            <form method="POST" action="<?php echo e(route('admin.products.destroy-all')); ?>" onsubmit="return confirm('Delete <?php echo e(request('q') ? 'all products matching \'' . request('q') . '\'' : 'ALL products in the catalogue'); ?>? Any with real order or purchase history will be removed from the storefront instead of deleted outright. This cannot be undone.')">
+                <?php echo csrf_field(); ?>
+                <?php echo method_field('DELETE'); ?>
+                <input type="hidden" name="q" value="<?php echo e(request('q')); ?>">
+                <button type="submit" class="rounded-lg border border-danger-500 px-4 py-2 text-sm font-medium text-danger-500 hover:bg-danger-50">
+                    Delete <?php echo e(request('q') ? 'matching' : 'all'); ?>
+
+                </button>
+            </form>
         </div>
     </div>
 
@@ -88,14 +97,19 @@
                                 <span class="mr-2 rounded bg-danger-50 px-1.5 py-0.5 text-[10px] font-medium text-danger-600">Removed</span>
                             <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                             <a href="<?php echo e(route('admin.products.edit', $product)); ?>" class="text-sm font-medium text-primary-500 hover:underline">Edit</a>
-                            <form method="POST" action="<?php echo e(route('admin.products.destroy', $product)); ?>" class="ml-3 inline" onsubmit="return confirm('<?php echo e($product->is_active ? 'Remove this product from the storefront?' : 'Restore this product to the storefront?'); ?>')">
-                                <?php echo csrf_field(); ?>
-                                <?php echo method_field('DELETE'); ?>
-                                <button type="submit" class="text-sm font-medium <?php echo e($product->is_active ? 'text-danger-500' : 'text-success-600'); ?> hover:underline">
-                                    <?php echo e($product->is_active ? 'Delete' : 'Restore'); ?>
-
-                                </button>
-                            </form>
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($product->is_active): ?>
+                                <form method="POST" action="<?php echo e(route('admin.products.destroy', $product)); ?>" class="ml-3 inline" onsubmit="return confirm('Delete this product? If it has no order or purchase history, it will be permanently removed. Otherwise, it will be taken off the storefront instead.')">
+                                    <?php echo csrf_field(); ?>
+                                    <?php echo method_field('DELETE'); ?>
+                                    <button type="submit" class="text-sm font-medium text-danger-500 hover:underline">Delete</button>
+                                </form>
+                            <?php else: ?>
+                                <form method="POST" action="<?php echo e(route('admin.products.restore', $product)); ?>" class="ml-3 inline">
+                                    <?php echo csrf_field(); ?>
+                                    <?php echo method_field('PATCH'); ?>
+                                    <button type="submit" class="text-sm font-medium text-success-600 hover:underline">Restore</button>
+                                </form>
+                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </td>
                     </tr>
                 <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>

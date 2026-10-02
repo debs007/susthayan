@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Franchise\VerifyPrescriptionRequest;
 use App\Models\Prescription;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -23,6 +24,20 @@ class PrescriptionVerificationController extends Controller
         return response()->json(['prescriptions' => $pending]);
     }
 
+    /** Past approved prescriptions this pharmacist reviewed - not rejected, matching "approved prescriptions" as asked. */
+    public function history(Request $request): JsonResponse
+    {
+        $approved = Prescription::where('verification_status', 'approved')
+            ->where('verified_by', $request->user()->id)
+            ->when($request->filled('date_from'), fn ($q) => $q->whereDate('verified_at', '>=', $request->date('date_from')))
+            ->when($request->filled('date_to'), fn ($q) => $q->whereDate('verified_at', '<=', $request->date('date_to')))
+            ->with('user:id,name,mobile')
+            ->orderByDesc('verified_at')
+            ->get(['id', 'user_id', 'file_path', 'created_at', 'verified_at']);
+
+        return response()->json(['prescriptions' => $approved]);
+    }
+
     public function verify(VerifyPrescriptionRequest $request, Prescription $prescription): JsonResponse
     {
         $prescription->update([
@@ -33,6 +48,16 @@ class PrescriptionVerificationController extends Controller
                 ? $request->validated('rejection_reason')
                 : null,
         ]);
+
+        // Only on approval - replaces rather than appends, so correcting
+        // a transcription by re-submitting doesn't leave stale lines
+        // behind from an earlier attempt.
+        if ($request->validated('status') === 'approved' && $request->filled('medicines')) {
+            $prescription->medicines()->delete();
+            $prescription->medicines()->createMany(
+                collect($request->validated('medicines'))->map(fn ($name) => ['medicine_name' => $name])->all()
+            );
+        }
 
         // If this prescription was already linked to an order (uploaded after
         // an order existed rather than pre-checkout), push the update live so

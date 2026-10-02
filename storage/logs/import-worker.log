@@ -1,0 +1,50 @@
+  2026-09-27 05:04:34 App\Jobs\ProcessProductImportJob ............... RUNNING
+  2026-09-27 05:04:35 App\Jobs\ProcessProductImportJob ......... 287.10ms DONE
+  2026-09-27 06:50:27 App\Jobs\ProcessProductImportJob ............... RUNNING
+  2026-09-27 06:50:27 App\Jobs\ProcessProductImportJob ......... 108.78ms DONE
+  2026-09-27 07:09:34 App\Events\OrderStatusUpdated .................. RUNNING
+  2026-09-27 07:09:34 App\Events\OrderStatusUpdated ............. 21.63ms FAIL
+  2026-09-27 07:09:40 App\Events\OrderStatusUpdated .................. RUNNING
+  2026-09-27 07:09:40 App\Events\OrderStatusUpdated .............. 8.35ms FAIL
+  2026-09-27 07:43:12 App\Events\OrderStatusUpdated .................. RUNNING
+  2026-09-27 07:43:12 App\Events\OrderStatusUpdated .............. 7.00ms FAIL
+  2026-09-27 07:43:30 App\Events\OrderStatusUpdated .................. RUNNING
+  2026-09-27 07:43:30 App\Events\OrderStatusUpdated .............. 6.10ms FAIL
+  2026-09-27 13:54:04 App\Jobs\ProcessProductImportJob ............... RUNNING
+  2026-09-27 13:54:04 App\Jobs\ProcessProductImportJob ......... 324.54ms DONE
+  2026-09-27 16:52:08 App\Events\OrderStatusUpdated .................. RUNNING
+  2026-09-27 16:52:08 App\Events\OrderStatusUpdated ............. 82.81ms FAIL
+  2026-09-28 09:32:14 App\Events\OrderStatusUpdated .................. RUNNING
+  2026-09-28 09:32:14 App\Events\OrderStatusUpdated ............ 191.11ms FAIL
+  2026-09-28 09:32:23 App\Events\OrderStatusUpdated .................. RUNNING
+  2026-09-28 09:32:23 App\Events\OrderStatusUpdated .............. 8.88ms FAIL
+  2026-09-28 09:32:23 App\Events\OrderStatusUpdated .................. RUNNING
+  2026-09-28 09:32:23 App\Events\OrderStatusUpdated .............. 7.93ms FAIL
+  2026-09-28 17:54:58 App\Events\OrderStatusUpdated .................. RUNNING
+  2026-09-28 17:54:59 App\Events\OrderStatusUpdated ............ 181.72ms FAIL
+  2026-09-28 17:54:59 App\Events\NewOrderPlaced ...................... RUNNING
+  2026-09-28 17:54:59 App\Events\NewOrderPlaced ................. 48.73ms FAIL
+  2026-09-30 10:09:41 App\Events\OrderStatusUpdated .................. RUNNING
+  2026-09-30 10:09:41 App\Events\OrderStatusUpdated ............ 172.77ms FAIL
+  2026-09-30 10:09:41 App\Events\NewOrderPlaced ...................... RUNNING
+  2026-09-30 10:09:41 App\Events\NewOrderPlaced .................. 7.28ms FAIL
+  2026-09-30 14:35:15 App\Events\OrderStatusUpdated .................. RUNNING
+  2026-09-30 14:35:16 App\Events\OrderStatusUpdated ............ 152.95ms FAIL
+  2026-09-30 14:35:16 App\Events\NewOrderPlaced ...................... RUNNING
+  2026-09-30 14:35:16 App\Events\NewOrderPlaced .................. 6.64ms FAIL
+  2026-10-01 12:12:33 App\Events\OrderStatusUpdated .................. RUNNING
+  2026-10-01 12:12:34 App\Events\OrderStatusUpdated ............ 225.31ms FAIL
+  2026-10-01 12:12:37 App\Events\OrderStatusUpdated .................. RUNNING
+  2026-10-01 12:12:37 App\Events\OrderStatusUpdated .............. 6.65ms FAIL
+  2026-10-01 12:12:46 App\Events\OrderStatusUpdated .................. RUNNING
+  2026-10-01 12:12:46 App\Events\OrderStatusUpdated .............. 7.74ms FAIL
+  2026-10-01 12:12:49 App\Events\OrderStatusUpdated .................. RUNNING
+  2026-10-01 12:12:49 App\Events\OrderStatusUpdated .............. 4.94ms FAIL
+  2026-10-02 05:42:32 App\Events\OrderStatusUpdated .................. RUNNING
+  2026-10-02 05:42:32 App\Events\OrderStatusUpdated ............ 237.82ms FAIL
+  2026-10-02 05:42:32 App\Events\NewOrderPlaced ...................... RUNNING
+  2026-10-02 05:42:32 App\Events\NewOrderPlaced ................. 14.42ms FAIL
+  2026-10-02 09:13:11 App\Events\OrderStatusUpdated .................. RUNNING
+  2026-10-02 09:13:12 App\Events\OrderStatusUpdated ............ 257.95ms FAIL
+  2026-10-02 12:28:07 App\Events\OrderStatusUpdated .................. RUNNING
+  2026-10-02 12:28:07 App\Events\OrderStatusUpdated ............. 66.48ms FAIL

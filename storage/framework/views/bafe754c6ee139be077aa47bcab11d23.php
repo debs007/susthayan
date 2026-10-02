@@ -33,7 +33,7 @@ unset($__defined_vars, $__key, $__value); ?>
 ?>
 
 <a href="<?php echo e(route('storefront.products.show', $product)); ?>" wire:navigate class="group block w-full max-w-[130px] overflow-hidden rounded-xl border border-line bg-surface hover:border-brand">
-    <div class="aspect-square w-full bg-mist/40 p-2">
+    <div class="aspect-square w-full bg-surface p-2">
         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($product->image_url): ?>
             <img src="<?php echo e($product->image_url); ?>" alt="<?php echo e($product->name); ?>" class="h-full w-full object-contain" loading="lazy">
         <?php else: ?>

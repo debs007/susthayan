@@ -13,6 +13,7 @@ use App\Services\Inventory\StockService;
 use App\Services\Invoicing\InvoiceService;
 use App\Services\Orders\OrderFulfillmentService;
 use App\Services\Payment\PaymentConfirmationService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -77,10 +78,40 @@ class OrderController extends Controller
     }
 
     /**
+     * Per-item availability at a candidate franchise, for the confirmation
+     * modal shown before assign() is actually submitted - lets the admin
+     * see exactly what's short before deciding whether to proceed with
+     * this franchise anyway, or pick a better-stocked one instead.
+     */
+    public function availability(Request $request, Order $order): JsonResponse
+    {
+        $request->validate(['franchise_id' => ['required', 'integer', 'exists:franchises,id']]);
+
+        $franchiseId = $request->integer('franchise_id');
+        $order->loadMissing('items.product');
+
+        $items = $order->items->map(function ($item) use ($franchiseId) {
+            $available = $this->stock->available($franchiseId, $item->product_id);
+
+            return [
+                'product_id' => $item->product_id,
+                'product_name' => $item->product?->name ?? "Product #{$item->product_id}",
+                'quantity_needed' => $item->quantity,
+                'quantity_available' => $available,
+                'is_available' => $available >= $item->quantity,
+            ];
+        });
+
+        return response()->json(['data' => $items]);
+    }
+
+    /**
      * The actual counterpart to orders no longer picking a franchise at
      * checkout - this is the first point a franchise is checked against
      * this order's items at all, since placeOrder() never checked stock
-     * (there was no franchise to check it against yet).
+     * (there was no franchise to check it against yet). Assignment itself
+     * is never blocked by stock - the admin already saw per-item
+     * availability via availability() above before choosing to proceed.
      */
     public function assign(Request $request, Order $order): RedirectResponse
     {
@@ -91,29 +122,15 @@ class OrderController extends Controller
         }
 
         $franchiseId = $request->integer('franchise_id');
-        $order->loadMissing('items');
 
-        foreach ($order->items as $item) {
-            $available = $this->stock->available($franchiseId, $item->product_id);
-            if ($available < $item->quantity) {
-                return back()->with('error', "Insufficient stock at that franchise for order item #{$item->product_id} (needs {$item->quantity}, has {$available}).");
-            }
-        }
-
-        try {
-            DB::transaction(function () use ($order, $franchiseId) {
-                $order->update(['franchise_id' => $franchiseId]);
-                // The actual reservation - this couldn't happen at payment
-                // confirmation, since no franchise was known yet at that
-                // point. This is the first moment one is.
-                $this->stock->reserveForOrder($order);
-            });
-        } catch (InsufficientStockException $e) {
-            // Rare - stock moved between the check just above and the
-            // reservation itself. The transaction already rolled back the
-            // franchise assignment, so the order is still safely unassigned.
-            return back()->with('error', 'Stock changed just now and is no longer sufficient - please try again.');
-        }
+        DB::transaction(function () use ($order, $franchiseId) {
+            $order->update(['franchise_id' => $franchiseId]);
+            // Best-effort - reserves whatever's actually available for
+            // each item and leaves the rest unreserved, rather than
+            // blocking the assignment over a shortfall the admin already
+            // chose to proceed past.
+            $this->stock->reserveForOrder($order);
+        });
 
         return redirect()->route('admin.orders.show', $order)->with('success', 'Order assigned to franchise.');
     }

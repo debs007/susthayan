@@ -144,16 +144,61 @@
                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(session('error')): ?>
                         <p class="mb-3 text-xs text-danger-600"><?php echo e(session('error')); ?></p>
                     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-                    <form method="POST" action="<?php echo e(route('admin.orders.assign', $order)); ?>" class="flex items-center gap-2">
-                        <?php echo csrf_field(); ?>
-                        <select name="franchise_id" required class="flex-1 rounded-lg border border-border bg-canvas px-3 py-2 text-sm">
-                            <option value="">Choose a franchise&hellip;</option>
-                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $franchises; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $franchise): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
-                                <option value="<?php echo e($franchise->id); ?>"><?php echo e($franchise->name); ?></option>
-                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
-                        </select>
-                        <button type="submit" class="rounded-lg bg-primary-500 px-3 py-2 text-sm font-medium text-white hover:bg-primary-600">Assign</button>
-                    </form>
+                    <div x-data="{
+                        showModal: false, loading: false, items: [],
+                        selectedName: '',
+                        async checkAvailability() {
+                            const select = this.$refs.franchiseSelect;
+                            if (! select.value) return;
+                            this.selectedName = select.options[select.selectedIndex].text;
+                            this.items = [];
+                            this.loading = true;
+                            this.showModal = true;
+                            const res = await fetch('<?php echo e(route('admin.orders.availability', $order)); ?>?franchise_id=' + select.value);
+                            const json = await res.json();
+                            this.items = json.data;
+                            this.loading = false;
+                        }
+                    }">
+                        <form method="POST" action="<?php echo e(route('admin.orders.assign', $order)); ?>" x-ref="assignForm" class="flex items-center gap-2">
+                            <?php echo csrf_field(); ?>
+                            <select x-ref="franchiseSelect" name="franchise_id" required class="flex-1 rounded-lg border border-border bg-canvas px-3 py-2 text-sm">
+                                <option value="">Choose a franchise&hellip;</option>
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $franchises; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $franchise): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                                    <option value="<?php echo e($franchise->id); ?>"><?php echo e($franchise->name); ?></option>
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
+                            </select>
+                            <button type="button" @click="checkAvailability()" class="rounded-lg bg-primary-500 px-3 py-2 text-sm font-medium text-white hover:bg-primary-600">Assign</button>
+                        </form>
+
+                        <div x-show="showModal" x-cloak style="display: none" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" @keydown.escape.window="showModal = false">
+                            <div class="w-full max-w-md rounded-xl bg-canvas-raised p-5" @click.outside="showModal = false">
+                                <h3 class="font-display font-semibold">Assign to <span x-text="selectedName"></span></h3>
+                                <p class="mt-1 text-xs text-ink-muted">The order can still be assigned even if some items are short - the franchise can raise a supply order for what's missing.</p>
+
+                                <div x-show="loading" class="py-6 text-center text-sm text-ink-muted">Checking availability&hellip;</div>
+
+                                <div x-show="!loading" class="mt-3 max-h-64 space-y-2 overflow-y-auto">
+                                    <template x-for="item in items" :key="item.product_id">
+                                        <div class="flex items-center justify-between rounded-lg border border-border px-3 py-2 text-sm">
+                                            <div>
+                                                <p x-text="item.product_name"></p>
+                                                <p class="text-xs text-ink-muted" x-text="'Needs ' + item.quantity_needed + ' \u00b7 Has ' + item.quantity_available"></p>
+                                            </div>
+                                            <span class="whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-medium"
+                                                  :class="item.is_available ? 'bg-success-50 text-success-600' : 'bg-danger-50 text-danger-600'"
+                                                  x-text="item.is_available ? 'Available' : 'Short'"></span>
+                                        </div>
+                                    </template>
+                                </div>
+
+                                <div class="mt-5 flex justify-end gap-2">
+                                    <button type="button" @click="showModal = false" class="rounded-lg border border-border px-3 py-2 text-sm font-medium hover:bg-canvas">Cancel</button>
+                                    <button type="button" @click="$refs.assignForm.submit()" class="rounded-lg bg-primary-500 px-3 py-2 text-sm font-medium text-white hover:bg-primary-600">Confirm Assignment</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 <?php else: ?>
                     
                     <p class="text-sm text-ink-muted">Not applicable for this order type.</p>

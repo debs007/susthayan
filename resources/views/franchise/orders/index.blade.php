@@ -36,7 +36,7 @@
                 @forelse ($orders as $order)
                     <tr>
                         <td class="px-5 py-3">
-                            <p class="font-code text-xs font-medium">#HP-{{ $order->id }}</p>
+                            <a href="{{ route('franchise.orders.show', $order) }}" class="font-code text-xs font-medium text-primary-600 hover:underline">#HP-{{ $order->id }}</a>
                             <p class="text-xs text-ink-muted">
                                 @if ($order->order_type === 'lab_test' && $order->labTestBookings->isNotEmpty())
                                     {{ $order->labTestBookings->first()->labTest?->name ?? 'Lab test' }}{{ $order->labTestBookings->count() > 1 ? ' +'.($order->labTestBookings->count() - 1).' more' : '' }}

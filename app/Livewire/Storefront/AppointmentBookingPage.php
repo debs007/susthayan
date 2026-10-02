@@ -79,6 +79,18 @@ class AppointmentBookingPage extends Component
             return;
         }
 
+        // book() above already ran the same payment.enabled bypass and
+        // marked the order successful - calling initiatePayment() here
+        // too would try to open the real Razorpay widget with
+        // LogPaymentGateway's fake key for an order that's already
+        // paid. Go straight to confirmation instead, same as a real
+        // successful payment does.
+        if (! config('services.payment.enabled')) {
+            $this->redirect(route('storefront.orders.confirmation', $order->id), navigate: true);
+
+            return;
+        }
+
         $this->initiatePayment($order);
     }
 

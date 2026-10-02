@@ -22,7 +22,7 @@
         </nav>
 
         <div class="grid grid-cols-1 gap-10 md:grid-cols-2">
-            <div class="aspect-square rounded-2xl bg-mist/40 p-8">
+            <div class="aspect-square rounded-2xl bg-surface p-8">
                 <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($product->image_url): ?>
                     <img src="<?php echo e($product->image_url); ?>" alt="<?php echo e($product->name); ?>" class="h-full w-full object-contain">
                 <?php else: ?>
@@ -59,16 +59,13 @@
                     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                 </div>
 
-                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(($product->resolved_stock ?? 0) <= 0): ?>
-                    <p class="mt-2 text-sm font-medium text-danger">Currently out of stock</p>
-                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-
                 <div class="mt-6 max-w-xs">
+                    
                     <?php
 $__split = function ($name, $params = []) {
     return [$name, $params];
 };
-[$__name, $__params] = $__split('storefront.add-to-cart', ['productId' => $product->id, 'inStock' => ($product->resolved_stock ?? 0) > 0]);
+[$__name, $__params] = $__split('storefront.add-to-cart', ['productId' => $product->id, 'inStock' => true]);
 
 $__keyOuter = $__key ?? null;
 

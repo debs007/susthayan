@@ -18,6 +18,14 @@ class OrderItemResource extends JsonResource
             'unit_price' => (string) $this->unit_price,
             'tax_percentage' => (string) $this->tax_percentage,
             'total_price' => (string) $this->total_price,
+            // Set only by OrderFulfillmentController@index (the
+            // franchise's own order list) via the same dynamic-property
+            // pattern ProductPricingService::attach() uses for
+            // resolved_stock - simply absent for any other consumer of
+            // this shared resource, since "available at this franchise"
+            // is meaningless outside that one context.
+            'available_quantity' => $this->when(isset($this->available_quantity), fn () => $this->available_quantity),
+            'is_available' => $this->when(isset($this->available_quantity), fn () => $this->available_quantity >= $this->quantity),
             // Only meaningful once the order is fulfilled - null before that.
             'batches' => $this->whenLoaded('batches', fn () => $this->batches->map(fn ($b) => [
                 'batch_no' => $b->inventory?->batch_no,

@@ -8,6 +8,7 @@ use App\Http\Requests\Delivery\MarkDeliveredRequest;
 use App\Http\Requests\Delivery\MarkFailedRequest;
 use App\Http\Resources\DeliveryAssignmentResource;
 use App\Models\DeliveryAssignment;
+use App\Services\Invoicing\InvoiceService;
 use App\Services\Orders\OrderFulfillmentService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -23,7 +24,10 @@ use RuntimeException;
  */
 class AssignmentController extends Controller
 {
-    public function __construct(private readonly OrderFulfillmentService $fulfillment) {}
+    public function __construct(
+        private readonly OrderFulfillmentService $fulfillment,
+        private readonly InvoiceService $invoices,
+    ) {}
 
     public function index(Request $request): AnonymousResourceCollection
     {
@@ -34,6 +38,31 @@ class AssignmentController extends Controller
             ->get();
 
         return DeliveryAssignmentResource::collection($assignments);
+    }
+
+    public function history(Request $request): AnonymousResourceCollection
+    {
+        $assignments = DeliveryAssignment::where('delivery_agent_id', $request->user()->id)
+            ->where('status', 'delivered')
+            ->when($request->filled('date_from'), fn ($q) => $q->whereDate('delivered_at', '>=', $request->date('date_from')))
+            ->when($request->filled('date_to'), fn ($q) => $q->whereDate('delivered_at', '<=', $request->date('date_to')))
+            ->with(['order.items.product', 'order.address'])
+            ->orderByDesc('delivered_at')
+            ->get();
+
+        return DeliveryAssignmentResource::collection($assignments);
+    }
+
+    public function downloadInvoice(Request $request, DeliveryAssignment $assignment)
+    {
+        abort_unless($assignment->delivery_agent_id === $request->user()->id, 403);
+
+        $order = $assignment->order;
+        abort_unless($order->invoice, 404, 'No invoice has been generated for this order yet.');
+
+        $order->load(['franchise', 'user', 'items.product', 'address']);
+
+        return $this->invoices->renderPdf($order, $order->invoice)->download("invoice-{$order->invoice->invoice_number}.pdf");
     }
 
     public function show(Request $request, DeliveryAssignment $assignment): JsonResponse

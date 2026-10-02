@@ -49,10 +49,16 @@
                             @if ($prescription->verification_status === 'rejected' && $prescription->rejection_reason)
                                 <p class="mt-1 text-xs text-ink-muted">{{ $prescription->rejection_reason }}</p>
                             @endif
+                            @if ($prescription->verification_status === 'approved' && $prescription->medicines->isNotEmpty())
+                                <p class="mt-1 text-xs text-ink-muted">{{ $prescription->medicines->pluck('medicine_name')->join(', ') }}</p>
+                            @endif
                         </td>
                         <td class="px-5 py-3 text-xs text-ink-muted">{{ $prescription->verifiedBy?->name ?? '—' }}</td>
                         <td class="px-5 py-3 text-right">
                             <a href="{{ route('admin.prescriptions.show', $prescription) }}" target="_blank" class="text-xs font-medium text-primary-500 hover:text-primary-600">View file →</a>
+                            @if ($prescription->verification_status === 'approved' && ! $prescription->order_id)
+                                <a href="{{ route('admin.prescriptions.create-order', $prescription) }}" class="ml-3 text-xs font-medium text-success-600 hover:text-success-700">Create order →</a>
+                            @endif
                         </td>
                     </tr>
                 @empty

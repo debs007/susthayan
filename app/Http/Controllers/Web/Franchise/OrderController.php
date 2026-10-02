@@ -8,6 +8,7 @@ use App\Http\Requests\Franchise\UpdateOrderStatusRequest;
 use App\Models\DeliveryAssignment;
 use App\Models\Order;
 use App\Models\User;
+use App\Services\Inventory\StockService;
 use App\Services\Orders\OrderFulfillmentService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -16,7 +17,10 @@ use RuntimeException;
 
 class OrderController extends Controller
 {
-    public function __construct(private readonly OrderFulfillmentService $fulfillment) {}
+    public function __construct(
+        private readonly OrderFulfillmentService $fulfillment,
+        private readonly StockService $stock,
+    ) {}
 
     public function index(Request $request): View
     {
@@ -40,6 +44,37 @@ class OrderController extends Controller
         ]);
 
         return view('franchise.orders.index', compact('orders', 'deliveryAgents', 'nextStatuses'));
+    }
+
+    public function show(Request $request, Order $order): View
+    {
+        abort_unless($order->franchise_id === $request->user()->franchise_id, 403);
+
+        $order->load([
+            'user:id,name,mobile',
+            'items.product',
+            'deliveryAssignments.deliveryAgent',
+            'labTestBookings.labTest',
+            'labTestBookings.labCenter',
+            'appointmentBooking.doctor',
+            'appointmentBooking.hospital',
+        ]);
+
+        // Same per-item availability pattern as the API's own order list
+        // (Api\Franchise\OrderFulfillmentController@index) - the
+        // franchise here is already fixed to this order, so this can be
+        // computed directly rather than needing a separate request.
+        foreach ($order->items as $item) {
+            $item->available_quantity = $this->stock->available($order->franchise_id, $item->product_id);
+        }
+
+        $deliveryAgents = User::where('franchise_id', $request->user()->franchise_id)
+            ->whereHas('roles', fn ($q) => $q->where('name', 'Delivery Agent'))
+            ->get(['id', 'name']);
+
+        $nextStatuses = $this->fulfillment->validNextStatuses($order);
+
+        return view('franchise.orders.show', compact('order', 'deliveryAgents', 'nextStatuses'));
     }
 
     public function updateStatus(UpdateOrderStatusRequest $request, Order $order): RedirectResponse

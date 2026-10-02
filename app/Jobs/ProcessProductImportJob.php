@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductImport;
+use App\Jobs\DownloadProductImageJob;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -192,48 +193,39 @@ class ProcessProductImportJob implements ShouldQueue
      * in the real one) rather than assuming a fixed count - this is what
      * "use all of them, however many there are" actually means in code.
      */
+    /**
+     * Fixed positions (0-indexed), per the exact column order confirmed
+     * directly rather than guessed from header text: 0=id (ignored),
+     * 1=name, 2=price, 3=manufacturer, 4=unit, 5&6=salt composition,
+     * 7&8=use of medicine, 9=side effects, 10=image.
+     */
     private function mapColumns(array $header): array
     {
-        $normalized = array_map(fn ($h) => trim((string) $h), $header);
-        $lower = array_map('strtolower', $normalized);
+        $lower = array_map(fn ($h) => strtolower(trim((string) $h)), $header);
 
         $find = function (string $exact) use ($lower) {
             $idx = array_search(strtolower($exact), $lower, true);
             return $idx === false ? null : $idx;
         };
 
-        $findByPrefix = function (string $prefix) use ($lower) {
-            foreach ($lower as $idx => $name) {
-                if (str_starts_with($name, strtolower($prefix))) {
-                    return $idx;
-                }
-            }
-            return null;
-        };
-
-        $findAllMatching = function (string $pattern) use ($normalized) {
-            $indices = [];
-            foreach ($normalized as $idx => $name) {
-                if (preg_match($pattern, $name)) {
-                    $indices[] = $idx;
-                }
-            }
-            return $indices;
-        };
-
         return [
-            'name' => $find('name'),
-            'price' => $findByPrefix('price'), // matches "price(₹)", "Price (Rs)", etc.
-            'manufacturer' => $find('manufacturer_name'),
-            'pack_size' => $find('pack_size_label'),
-            'composition' => $findAllMatching('/^short_composition\d*$/i'),
-            'uses' => $findAllMatching('/^use\d*$/i'),
-            'side_effects' => $find('Consolidated_Side_Effects'),
-            // Optional - the demo file has no such column at all, but the
-            // real file might. Missing entirely or empty for a given row
-            // both fall back to the default "Medicines" category the
-            // same way - see resolveCategoryId().
+            'name' => 1,
+            'price' => 2,
+            'manufacturer' => 3,
+            'pack_size' => 4,
+            'composition' => [5, 6],
+            'uses' => [7, 8],
+            'side_effects' => 9,
+            'image' => 10,
+            // Not part of the confirmed 11-column layout - stays
+            // name-based as a bonus in case a future file adds one;
+            // simply won't match (correctly falling back to the
+            // default category) otherwise.
             'category' => $find('category'),
+            // Optional, last column in the file per the actual layout -
+            // detected by name rather than assumed position, so this
+            // still works even if a future file's column order differs.
+            'image' => $find('image'),
         ];
     }
 
@@ -262,6 +254,17 @@ class ProcessProductImportJob implements ShouldQueue
             ->filter(fn ($v) => $v !== null && $v !== '')
             ->implode('; ');
 
+        $sideEffects = $this->cell($row, $columns['side_effects']);
+
+        $descriptionSections = [];
+        if ($uses !== '') {
+            $descriptionSections[] = "Use of medicine\n{$uses}";
+        }
+        if ($sideEffects !== null) {
+            $descriptionSections[] = "Side effects\n{$sideEffects}";
+        }
+        $description = ! empty($descriptionSections) ? implode("\n\n", $descriptionSections) : null;
+
         return [
             'name' => $name,
             // Unique even for a deliberately repeated name (the source
@@ -273,12 +276,12 @@ class ProcessProductImportJob implements ShouldQueue
             'salt_composition' => $composition !== '' ? $composition : null,
             'manufacturer' => $this->cell($row, $columns['manufacturer']),
             'unit' => $this->cell($row, $columns['pack_size']),
-            'uses' => $uses !== '' ? $uses : null,
-            'side_effects' => $this->cell($row, $columns['side_effects']),
+            'description' => $description,
             'drug_schedule' => 'otc',
             'prescription_required' => false,
             'is_active' => true,
             '_price' => $price, // stripped before insert - see flushBatch()
+            '_image_url' => $this->cell($row, $columns['image'] ?? null),
             'created_at' => now(),
             'updated_at' => now(),
         ];
@@ -320,11 +323,15 @@ class ProcessProductImportJob implements ShouldQueue
 
         $today = now()->toDateString();
         $slugToPrice = [];
+        $slugToImageUrl = [];
         $insertRows = [];
 
         foreach ($rows as $row) {
             $slugToPrice[$row['slug']] = $row['_price'];
-            unset($row['_price']);
+            if ($row['_image_url'] !== null) {
+                $slugToImageUrl[$row['slug']] = $row['_image_url'];
+            }
+            unset($row['_price'], $row['_image_url']);
             $insertRows[] = $row;
         }
 
@@ -349,6 +356,12 @@ class ProcessProductImportJob implements ShouldQueue
 
         if (! empty($priceRows)) {
             DB::table('product_prices')->insert($priceRows);
+        }
+
+        foreach ($idsBySlug as $slug => $productId) {
+            if (isset($slugToImageUrl[$slug])) {
+                DownloadProductImageJob::dispatch($productId, $slugToImageUrl[$slug])->onQueue('images');
+            }
         }
 
         $this->import->increment('imported_count', count($idsBySlug));

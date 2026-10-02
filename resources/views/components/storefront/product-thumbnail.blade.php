@@ -5,7 +5,7 @@
 @endphp
 
 <a href="{{ route('storefront.products.show', $product) }}" wire:navigate class="group block w-full max-w-[130px] overflow-hidden rounded-xl border border-line bg-surface hover:border-brand">
-    <div class="aspect-square w-full bg-mist/40 p-2">
+    <div class="aspect-square w-full bg-surface p-2">
         @if ($product->image_url)
             <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="h-full w-full object-contain" loading="lazy">
         @else

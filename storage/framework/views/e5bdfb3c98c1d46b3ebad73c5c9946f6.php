@@ -19,14 +19,17 @@
         <div class="rounded-xl border border-border bg-canvas-raised p-8">
             <h1 class="font-display text-lg font-semibold">Bulk upload products</h1>
             <p class="mt-1 text-sm text-ink-muted">
-                Upload a CSV of the catalogue. Expected columns: <code class="text-xs">name</code>,
-                <code class="text-xs">price</code>, <code class="text-xs">manufacturer_name</code>,
-                <code class="text-xs">pack_size_label</code>, one or more
-                <code class="text-xs">short_composition1/2/3...</code> columns, one or more
-                <code class="text-xs">use0/1/2...</code> columns, and
-                <code class="text-xs">Consolidated_Side_Effects</code>. Every product is created without an image and
-                priced with no franchise override - both are applied the same way to every row.
-                Rows with the same name are all imported separately, not merged or skipped.
+                Upload a CSV of the catalogue. Columns are read by their exact position, in this order:
+                <strong>1.</strong> id (ignored), <strong>2.</strong> name, <strong>3.</strong> price,
+                <strong>4.</strong> manufacturer name, <strong>5.</strong> unit, <strong>6-7.</strong> salt
+                composition (combined into one field), <strong>8-9.</strong> use of medicine (combined into the
+                product description under a "Use of medicine" heading), <strong>10.</strong> side effects (added to
+                the same description under its own "Side effects" heading), <strong>11.</strong> image - a direct
+                link to that product's photo, downloaded and stored automatically in the background (product
+                creation itself doesn't wait on this, so a slow or broken image link never slows down the import).
+                Every product is priced with no franchise override - applied the same way to every row. A row whose
+                name matches one already in the database (from an earlier import or already processed earlier in
+                this same file) is skipped, not inserted again.
             </p>
 
             <form id="import-form" class="mt-6 space-y-4">
@@ -57,7 +60,7 @@
                 <div id="progress-bar" class="h-full rounded-full bg-primary-500 transition-all duration-300" style="width: 0%"></div>
             </div>
 
-            <div id="progress-counts" class="mt-3 grid grid-cols-3 gap-3 text-center text-sm hidden">
+            <div id="progress-counts" class="mt-3 grid grid-cols-4 gap-3 text-center text-sm hidden">
                 <div>
                     <p class="font-semibold" id="count-processed">0</p>
                     <p class="text-xs text-ink-muted">Processed</p>
@@ -65,6 +68,10 @@
                 <div>
                     <p class="font-semibold text-emerald-600" id="count-imported">0</p>
                     <p class="text-xs text-ink-muted">Imported</p>
+                </div>
+                <div>
+                    <p class="font-semibold text-blue-600" id="count-duplicate">0</p>
+                    <p class="text-xs text-ink-muted">Duplicates</p>
                 </div>
                 <div>
                     <p class="font-semibold text-amber-600" id="count-skipped">0</p>
@@ -90,6 +97,7 @@
             const countProcessed = document.getElementById('count-processed');
             const countImported = document.getElementById('count-imported');
             const countSkipped = document.getElementById('count-skipped');
+            const countDuplicate = document.getElementById('count-duplicate');
 
             let pollTimer = null;
 
@@ -117,6 +125,7 @@
                             : data.processed_rows;
                         countImported.textContent = data.imported_count;
                         countSkipped.textContent = data.skipped_count;
+                        countDuplicate.textContent = data.duplicate_count;
 
                         if (data.status === 'processing' || data.status === 'pending') {
                             setStatusText(data.status === 'pending' ? 'Starting...' : 'Processing rows...');
@@ -124,7 +133,7 @@
                             stopPolling();
                             spinner.classList.add('hidden');
                             progressBar.style.width = '100%';
-                            setStatusText(`Done - ${data.imported_count} products imported${data.skipped_count > 0 ? `, ${data.skipped_count} rows skipped` : ''}.`);
+                            setStatusText(`Done - ${data.imported_count} products imported${data.duplicate_count > 0 ? `, ${data.duplicate_count} duplicates ignored` : ''}${data.skipped_count > 0 ? `, ${data.skipped_count} rows skipped` : ''}.`);
                         } else if (data.status === 'failed') {
                             stopPolling();
                             spinner.classList.add('hidden');

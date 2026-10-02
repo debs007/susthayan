@@ -3,6 +3,7 @@
 use App\Http\Controllers\Web\Admin\AuditLogController;
 use App\Http\Controllers\Web\Admin\BrandController;
 use App\Http\Controllers\Web\Admin\CategoryController as AdminCategoryController;
+use App\Http\Controllers\Web\Admin\SupportQueryController as AdminSupportQueryController;
 use App\Http\Controllers\Web\Admin\AppointmentBookingController as AdminAppointmentBookingController;
 use App\Http\Controllers\Web\Admin\CouponController;
 use App\Http\Controllers\Web\Admin\CustomerController;
@@ -10,6 +11,7 @@ use App\Http\Controllers\Web\Admin\DashboardController as AdminDashboardControll
 use App\Http\Controllers\Web\Admin\NotificationController as AdminNotificationController;
 use App\Http\Controllers\Web\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Web\Admin\PrescriptionController as AdminPrescriptionController;
+use App\Livewire\Admin\CreateOrderFromPrescription;
 use App\Http\Controllers\Web\Admin\DepartmentController;
 use App\Http\Controllers\Web\Admin\DoctorController;
 use App\Http\Controllers\Web\Admin\FranchiseController as AdminFranchiseController;
@@ -101,6 +103,7 @@ Route::middleware('auth:web')->group(function () {
             Route::get('/dashboard', [FranchiseDashboardController::class, 'index'])->name('dashboard');
 
             Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+            Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
             Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.status');
             Route::post('/orders/{order}/assign-delivery', [OrderController::class, 'assignDelivery'])->name('orders.assign-delivery');
 
@@ -162,12 +165,17 @@ Route::middleware('auth:web')->group(function () {
             Route::get('/categories', [AdminCategoryController::class, 'index'])->name('categories.index');
             Route::post('/categories', [AdminCategoryController::class, 'store'])->name('categories.store');
 
+            Route::get('/support-queries', [AdminSupportQueryController::class, 'index'])->name('support-queries.index');
+            Route::patch('/support-queries/{supportQuery}/resolve', [AdminSupportQueryController::class, 'resolve'])->name('support-queries.resolve');
+
             Route::get('/products', [AdminProductController::class, 'index'])->name('products.index');
             Route::get('/products/create', [AdminProductController::class, 'create'])->name('products.create');
             Route::post('/products', [AdminProductController::class, 'store'])->name('products.store');
             Route::get('/products/{product}/edit', [AdminProductController::class, 'edit'])->name('products.edit');
             Route::patch('/products/{product}', [AdminProductController::class, 'update'])->name('products.update');
             Route::delete('/products/{product}', [AdminProductController::class, 'destroy'])->name('products.destroy');
+            Route::delete('/products', [AdminProductController::class, 'destroyAll'])->name('products.destroy-all');
+            Route::patch('/products/{product}/restore', [AdminProductController::class, 'restore'])->name('products.restore');
             Route::post('/products/{product}/prices', [AdminProductController::class, 'storePrice'])->name('products.prices.store');
             Route::post('/products/{product}/image', [AdminProductController::class, 'uploadImage'])->name('products.image.upload');
             Route::delete('/products/{product}/image', [AdminProductController::class, 'removeImage'])->name('products.image.remove');
@@ -241,6 +249,7 @@ Route::middleware('auth:web')->group(function () {
             Route::get('/vendors/{supplier}/edit', [AdminSupplierController::class, 'edit'])->name('vendors.edit');
             Route::patch('/vendors/{supplier}', [AdminSupplierController::class, 'update'])->name('vendors.update');
             Route::get('/vendors-outstanding', [AdminVendorLedgerController::class, 'outstanding'])->name('vendors.outstanding');
+            Route::get('/purchase-orders/{purchaseOrder}', [AdminVendorLedgerController::class, 'show'])->name('purchase-orders.show');
             Route::get('/vendors/{supplier}/ledger', [AdminVendorLedgerController::class, 'ledger'])->name('vendors.ledger');
 
             Route::get('/settlements', [AdminSettlementController::class, 'index'])->name('settlements.index');
@@ -268,11 +277,13 @@ Route::middleware('auth:web')->group(function () {
             Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders.index');
             Route::get('/orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
             Route::post('/orders/{order}/assign', [AdminOrderController::class, 'assign'])->name('orders.assign');
+            Route::get('/orders/{order}/availability', [AdminOrderController::class, 'availability'])->name('orders.availability');
             Route::post('/orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.status');
             Route::get('/orders/{order}/invoice', [AdminOrderController::class, 'downloadInvoice'])->name('orders.invoice');
 
             Route::get('/prescriptions', [AdminPrescriptionController::class, 'index'])->name('prescriptions.index');
             Route::get('/prescriptions/{prescription}/file', [AdminPrescriptionController::class, 'show'])->name('prescriptions.show');
+            Route::get('/prescriptions/{prescription}/create-order', CreateOrderFromPrescription::class)->name('prescriptions.create-order');
 
             Route::get('/appointment-bookings', [AdminAppointmentBookingController::class, 'index'])->name('appointment-bookings.index');
 

@@ -50,12 +50,22 @@
         <div class="rounded-xl border border-border bg-canvas-raised p-5">
             <h2 class="mb-3 font-display font-semibold">Prescriptions ({{ $customer->prescriptions->count() }})</h2>
             @forelse ($customer->prescriptions as $prescription)
-                <div class="flex items-center justify-between border-b border-border py-2 text-sm last:border-0">
-                    <p class="text-xs text-ink-muted">{{ $prescription->created_at->format('d M Y') }}</p>
-                    <span class="rounded-full px-2 py-0.5 text-xs font-medium
-                        {{ $prescription->verification_status === 'approved' ? 'bg-success-50 text-success-600' : ($prescription->verification_status === 'rejected' ? 'bg-danger-50 text-danger-600' : 'bg-canvas text-ink-muted') }}">
-                        {{ ucfirst($prescription->verification_status) }}
-                    </span>
+                <div class="border-b border-border py-2 text-sm last:border-0">
+                    <div class="flex items-center justify-between">
+                        <p class="text-xs text-ink-muted">{{ $prescription->created_at->format('d M Y') }}</p>
+                        <span class="rounded-full px-2 py-0.5 text-xs font-medium
+                            {{ $prescription->verification_status === 'approved' ? 'bg-success-50 text-success-600' : ($prescription->verification_status === 'rejected' ? 'bg-danger-50 text-danger-600' : 'bg-canvas text-ink-muted') }}">
+                            {{ ucfirst($prescription->verification_status) }}
+                        </span>
+                    </div>
+                    @if ($prescription->verification_status === 'approved')
+                        @if ($prescription->medicines->isNotEmpty())
+                            <p class="mt-1 text-xs text-ink-muted">{{ $prescription->medicines->pluck('medicine_name')->join(', ') }}</p>
+                        @endif
+                        @if (! $prescription->order_id)
+                            <a href="{{ route('admin.prescriptions.create-order', $prescription) }}" class="mt-1 inline-block text-xs font-medium text-success-600 hover:text-success-700">Create order →</a>
+                        @endif
+                    @endif
                 </div>
             @empty
                 <p class="text-sm text-ink-muted">No prescriptions uploaded.</p>

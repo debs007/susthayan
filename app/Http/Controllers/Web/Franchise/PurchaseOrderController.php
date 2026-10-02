@@ -39,12 +39,27 @@ class PurchaseOrderController extends Controller
         return view('franchise.purchase-orders.index', compact('purchaseOrders'));
     }
 
-    public function create(): View
+    public function create(Request $request): View
     {
         $suppliers = Supplier::where('is_active', true)->orderBy('name')->get(['id', 'name']);
         $products = Product::where('is_active', true)->orderBy('name')->get(['id', 'name']);
 
-        return view('franchise.purchase-orders.create', compact('suppliers', 'products'));
+        // From the order detail page's "create supply order for missing
+        // items" link - a product_id/quantity pair per short item,
+        // dropping anything malformed rather than letting a bad query
+        // string break the form. Empty when nothing was passed, same as
+        // before.
+        $prefillItems = collect($request->input('prefill', []))
+            ->filter(fn ($item) => isset($item['product_id'], $item['quantity']))
+            ->map(fn ($item) => [
+                'product_id' => (int) $item['product_id'],
+                'ordered_qty' => (int) $item['quantity'],
+                'expected_rate' => '',
+            ])
+            ->values()
+            ->all();
+
+        return view('franchise.purchase-orders.create', compact('suppliers', 'products', 'prefillItems'));
     }
 
     public function store(CreatePurchaseOrderRequest $request): RedirectResponse

@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\Auth\CustomerAuthController;
 use App\Http\Controllers\Api\Auth\StaffAuthController;
 use App\Http\Controllers\Api\Customer\AddressController;
+use App\Http\Controllers\Api\Customer\SupportQueryController;
 use App\Http\Controllers\Api\Customer\AppointmentBookingController;
 use App\Http\Controllers\Api\Customer\BrandController as CustomerBrandController;
 use App\Http\Controllers\Api\Customer\CartController;
@@ -86,6 +87,9 @@ Route::prefix('customer')->middleware(['auth:sanctum', 'role:Customer'])->group(
     Route::get('/addresses', [AddressController::class, 'index']);
     Route::post('/addresses', [AddressController::class, 'store']);
     Route::delete('/addresses/{address}', [AddressController::class, 'destroy']);
+
+    Route::get('/support-queries', [SupportQueryController::class, 'index']);
+    Route::post('/support-queries', [SupportQueryController::class, 'store']);
 
     // The endpoint that was missing this whole build - without this, a
     // customer's cart could never resolve a franchise_id, which blocked
@@ -191,6 +195,7 @@ Route::prefix('franchise')
 
         Route::middleware('role:Pharmacist')->group(function () {
             Route::get('/prescriptions', [PrescriptionVerificationController::class, 'index']);
+            Route::get('/prescriptions/history', [PrescriptionVerificationController::class, 'history']);
             Route::get('/prescriptions/{prescription}/file', [PrescriptionVerificationController::class, 'show']);
             Route::post('/prescriptions/{prescription}/verify', [PrescriptionVerificationController::class, 'verify']);
         });
@@ -241,7 +246,9 @@ Route::prefix('delivery')
     ->middleware(['auth:sanctum', 'role:Delivery Agent', 'franchise.scope'])
     ->group(function () {
         Route::get('/assignments', [DeliveryAssignmentAgentController::class, 'index']);
+        Route::get('/assignments/history', [DeliveryAssignmentAgentController::class, 'history']);
         Route::get('/assignments/{assignment}', [DeliveryAssignmentAgentController::class, 'show']);
+        Route::get('/assignments/{assignment}/invoice', [DeliveryAssignmentAgentController::class, 'downloadInvoice']);
         Route::post('/assignments/{assignment}/picked-up', [DeliveryAssignmentAgentController::class, 'pickedUp']);
         Route::post('/assignments/{assignment}/delivered', [DeliveryAssignmentAgentController::class, 'delivered']);
         Route::post('/assignments/{assignment}/failed', [DeliveryAssignmentAgentController::class, 'failed']);

@@ -45,6 +45,7 @@
         'System' => [
             ['label' => 'Customers', 'route' => 'admin.customers.index', 'active' => 'admin.customers.*', 'live' => true],
             ['label' => 'Orders', 'route' => 'admin.orders.index', 'active' => 'admin.orders.*', 'live' => true],
+            ['label' => 'Help & Support', 'route' => 'admin.support-queries.index', 'active' => 'admin.support-queries.*', 'live' => true],
             ['label' => 'Prescriptions', 'route' => 'admin.prescriptions.index', 'active' => 'admin.prescriptions.*', 'live' => true],
             ['label' => 'Dr Bookings', 'route' => 'admin.appointment-bookings.index', 'active' => 'admin.appointment-bookings.*', 'live' => true],
             ['label' => 'Send Notification', 'route' => 'admin.notifications.create', 'active' => 'admin.notifications.*', 'live' => true],

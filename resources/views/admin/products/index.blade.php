@@ -24,6 +24,14 @@
             <a href="{{ route('admin.products.create') }}" class="rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white hover:bg-primary-600">
                 + Add product
             </a>
+            <form method="POST" action="{{ route('admin.products.destroy-all') }}" onsubmit="return confirm('Delete {{ request('q') ? 'all products matching \'' . request('q') . '\'' : 'ALL products in the catalogue' }}? Any with real order or purchase history will be removed from the storefront instead of deleted outright. This cannot be undone.')">
+                @csrf
+                @method('DELETE')
+                <input type="hidden" name="q" value="{{ request('q') }}">
+                <button type="submit" class="rounded-lg border border-danger-500 px-4 py-2 text-sm font-medium text-danger-500 hover:bg-danger-50">
+                    Delete {{ request('q') ? 'matching' : 'all' }}
+                </button>
+            </form>
         </div>
     </div>
 
@@ -73,13 +81,19 @@
                                 <span class="mr-2 rounded bg-danger-50 px-1.5 py-0.5 text-[10px] font-medium text-danger-600">Removed</span>
                             @endunless
                             <a href="{{ route('admin.products.edit', $product) }}" class="text-sm font-medium text-primary-500 hover:underline">Edit</a>
-                            <form method="POST" action="{{ route('admin.products.destroy', $product) }}" class="ml-3 inline" onsubmit="return confirm('{{ $product->is_active ? 'Remove this product from the storefront?' : 'Restore this product to the storefront?' }}')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="text-sm font-medium {{ $product->is_active ? 'text-danger-500' : 'text-success-600' }} hover:underline">
-                                    {{ $product->is_active ? 'Delete' : 'Restore' }}
-                                </button>
-                            </form>
+                            @if ($product->is_active)
+                                <form method="POST" action="{{ route('admin.products.destroy', $product) }}" class="ml-3 inline" onsubmit="return confirm('Delete this product? If it has no order or purchase history, it will be permanently removed. Otherwise, it will be taken off the storefront instead.')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-sm font-medium text-danger-500 hover:underline">Delete</button>
+                                </form>
+                            @else
+                                <form method="POST" action="{{ route('admin.products.restore', $product) }}" class="ml-3 inline">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button type="submit" class="text-sm font-medium text-success-600 hover:underline">Restore</button>
+                                </form>
+                            @endif
                         </td>
                     </tr>
                 @empty

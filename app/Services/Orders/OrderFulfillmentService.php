@@ -54,12 +54,26 @@ class OrderFulfillmentService
         }
 
         DB::transaction(function () use ($order, $newStatus) {
-            $isFulfilling = in_array($newStatus, ['delivered', 'picked_up'], true);
+            // Deduct the moment items physically leave the franchise, not
+            // whenever the order is later marked complete - out_for_delivery
+            // (or picked_up, which has no separate "en route" stage) is
+            // that moment. delivered only deducts too when this order
+            // skipped out_for_delivery entirely (ALLOWED_FROM permits
+            // ready_for_dispatch -> delivered directly) - otherwise it
+            // already happened at out_for_delivery and doing it again here
+            // would double-deduct. Deliberately separate from
+            // $isFulfilling below - stock leaves the franchise earlier
+            // than revenue is recognised, and only the former is what
+            // changed here.
+            $isDispatching = in_array($newStatus, ['out_for_delivery', 'picked_up'], true)
+                || ($newStatus === 'delivered' && $order->status->value === 'ready_for_dispatch');
 
-            if ($isFulfilling) {
+            if ($isDispatching) {
                 // The real deduction: FEFO batch selection + order_item_batches trail.
                 $this->stock->fulfillOrder($order);
             }
+
+            $isFulfilling = in_array($newStatus, ['delivered', 'picked_up'], true);
 
             $timestamps = match ($newStatus) {
                 'preparing' => ['prepared_at' => now()],
