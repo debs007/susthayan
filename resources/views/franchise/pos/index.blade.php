@@ -4,7 +4,7 @@
     @enderror
 
     <div
-        x-data="posSale(@json($catalog), {{ $isPharmacist ? 'true' : 'false' }})"
+        x-data='posSale(@json($catalog), {{ $isPharmacist ? 'true' : 'false' }})'
         class="grid gap-6 lg:grid-cols-3"
     >
         {{-- Product search + grid --}}

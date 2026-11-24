@@ -132,6 +132,7 @@ Route::prefix('customer')->middleware(['auth:sanctum', 'role:Customer'])->group(
     Route::post('/lab-test-bookings', [LabTestBookingController::class, 'store']);
     Route::get('/lab-test-bookings', [LabTestBookingController::class, 'index']);
 
+    Route::get('/categories', [ProductController::class, 'categories']);
     Route::get('/products', [ProductController::class, 'index']);
     Route::get('/products/{product}', [ProductController::class, 'show']);
 

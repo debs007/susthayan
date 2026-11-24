@@ -71,6 +71,24 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
         <p class="whitespace-nowrap font-code text-base font-semibold">₹<?php echo e(number_format($order->total_amount, 2)); ?></p>
     </div>
 
+    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($order->fulfillment_type->value === 'delivery' && $order->address): ?>
+        <div class="mb-6 rounded-xl border border-border bg-canvas-raised p-5">
+            <h2 class="mb-2 font-display font-semibold">Delivery address</h2>
+            <p class="text-sm">
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($order->address->label): ?>
+                    <span class="font-medium"><?php echo e($order->address->label); ?></span> &bull;
+                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                <?php echo e($order->address->line1); ?>
+
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($order->address->line2): ?>
+                    , <?php echo e($order->address->line2); ?>
+
+                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+            </p>
+            <p class="text-sm text-ink-muted"><?php echo e($order->address->city); ?>, <?php echo e($order->address->state); ?> &bull; <?php echo e($order->address->pincode); ?></p>
+        </div>
+    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+
     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($order->order_type === 'lab_test' && $order->labTestBookings->isNotEmpty()): ?>
         <div class="mb-6 rounded-xl border border-border bg-canvas-raised p-5">
             <h2 class="mb-3 font-display font-semibold">Lab tests</h2>

@@ -5,10 +5,12 @@ namespace App\Livewire\Admin;
 use App\Models\Prescription;
 use App\Models\Product;
 use App\Services\Orders\CheckoutService;
+use Livewire\Attributes\Layout;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 use RuntimeException;
 
+#[Layout('components.layouts.app')]
 class CreateOrderFromPrescription extends Component
 {
     #[Locked]
@@ -24,7 +26,18 @@ class CreateOrderFromPrescription extends Component
     public array $lines = [];
 
     public string $fulfillmentType = 'pickup';
-    public ?int $addressId = null;
+
+    // Either an existing address's id (as a string, to match <select>
+    // option values) or the literal "new" - picking "new" reveals the
+    // inline address form below instead of using a saved address.
+    public string $selectedAddressOption = '';
+    public string $newAddressLabel = '';
+    public string $newAddressLine1 = '';
+    public string $newAddressLine2 = '';
+    public string $newAddressCity = '';
+    public string $newAddressState = '';
+    public string $newAddressPincode = '';
+
     public ?string $errorMessage = null;
 
     public function mount(Prescription $prescription): void
@@ -33,8 +46,9 @@ class CreateOrderFromPrescription extends Component
         abort_if($prescription->order_id !== null, 404, 'An order has already been created from this prescription.');
 
         $this->prescriptionId = $prescription->id;
-        $this->addressId = $prescription->user->addresses()->where('is_default', true)->value('id')
+        $defaultAddressId = $prescription->user->addresses()->where('is_default', true)->value('id')
             ?? $prescription->user->addresses()->value('id');
+        $this->selectedAddressOption = $defaultAddressId ? (string) $defaultAddressId : 'new';
 
         $medicines = $prescription->medicines;
         $this->lines = $medicines->isNotEmpty()
@@ -65,15 +79,9 @@ class CreateOrderFromPrescription extends Component
         $this->lines = array_values($this->lines);
     }
 
-    public function updatedLines(mixed $value, string $key): void
+    /** Called directly from the view on each keystroke (debounced there) rather than relying on an implicit updated{Property} hook. */
+    public function searchProduct(int $index): void
     {
-        // Only react to the product_search field changing - matches
-        // "lines.<index>.product_search" from the key Livewire reports.
-        if (! str_ends_with($key, '.product_search')) {
-            return;
-        }
-
-        $index = (int) explode('.', $key)[0];
         $term = $this->lines[$index]['product_search'] ?? '';
 
         $this->lines[$index]['results'] = strlen($term) < 2
@@ -118,13 +126,36 @@ class CreateOrderFromPrescription extends Component
 
         $prescription = Prescription::with('user')->findOrFail($this->prescriptionId);
 
+        $addressId = null;
+        if ($this->fulfillmentType === 'delivery') {
+            if ($this->selectedAddressOption === 'new') {
+                if (trim($this->newAddressLine1) === '' || trim($this->newAddressCity) === ''
+                    || trim($this->newAddressState) === '' || trim($this->newAddressPincode) === '') {
+                    $this->errorMessage = 'Fill in the address line, city, state, and pincode.';
+                    return;
+                }
+
+                $addressId = $prescription->user->addresses()->create([
+                    'label' => $this->newAddressLabel ?: null,
+                    'line1' => $this->newAddressLine1,
+                    'line2' => $this->newAddressLine2 ?: null,
+                    'city' => $this->newAddressCity,
+                    'state' => $this->newAddressState,
+                    'pincode' => $this->newAddressPincode,
+                    'is_default' => false,
+                ])->id;
+            } else {
+                $addressId = (int) $this->selectedAddressOption;
+            }
+        }
+
         try {
             $order = $checkout->placeOrderFromPrescription(
                 user: $prescription->user,
                 prescription: $prescription,
                 items: $items,
                 fulfillmentType: $this->fulfillmentType,
-                addressId: $this->fulfillmentType === 'delivery' ? $this->addressId : null,
+                addressId: $addressId,
             );
         } catch (RuntimeException $e) {
             $this->errorMessage = $e->getMessage();

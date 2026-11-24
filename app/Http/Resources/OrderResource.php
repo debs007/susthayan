@@ -19,6 +19,16 @@ class OrderResource extends JsonResource
                 'id' => $this->franchise->id,
                 'name' => $this->franchise->name,
             ] : null),
+            'address' => $this->whenLoaded('address', fn () => $this->address ? [
+                'label' => $this->address->label,
+                'line1' => $this->address->line1,
+                'line2' => $this->address->line2,
+                'city' => $this->address->city,
+                'state' => $this->address->state,
+                'pincode' => $this->address->pincode,
+                'latitude' => $this->address->latitude,
+                'longitude' => $this->address->longitude,
+            ] : null),
             'customer' => $this->fulfillment_type->value === 'pos' ? [
                 'walk_in_name' => $this->walk_in_customer_name,
                 'walk_in_phone' => $this->walk_in_customer_phone,

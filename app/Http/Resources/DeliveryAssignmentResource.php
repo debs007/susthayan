@@ -26,6 +26,7 @@ class DeliveryAssignmentResource extends JsonResource
                     'longitude' => $this->order->address?->longitude,
                 ] : null,
                 'customer_name' => $this->order->user?->name ?? $this->order->walk_in_customer_name,
+                'customer_phone' => $this->order->user?->mobile ?? $this->order->walk_in_customer_phone,
                 'items' => $this->order->relationLoaded('items')
                     ? OrderItemResource::collection($this->order->items)
                     : [],

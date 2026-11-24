@@ -80,6 +80,7 @@
             }
         }
     </style>
+    @livewireStyles
 </head>
 <body class="h-full font-body text-[15px] text-ink" x-data="{ mobileNavOpen: false }">
     <div class="min-h-full lg:grid lg:grid-cols-[16rem_1fr]">
@@ -183,5 +184,6 @@
             </main>
         </div>
     </div>
+    @livewireScripts
 </body>
 </html>

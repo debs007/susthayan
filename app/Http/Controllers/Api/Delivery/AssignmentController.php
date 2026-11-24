@@ -33,7 +33,7 @@ class AssignmentController extends Controller
     {
         $assignments = DeliveryAssignment::where('delivery_agent_id', $request->user()->id)
             ->whereIn('status', ['assigned', 'picked_up', 'out_for_delivery'])
-            ->with(['order.items.product', 'order.address'])
+            ->with(['order.items.product', 'order.address', 'order.user'])
             ->orderBy('assigned_at')
             ->get();
 
@@ -46,7 +46,7 @@ class AssignmentController extends Controller
             ->where('status', 'delivered')
             ->when($request->filled('date_from'), fn ($q) => $q->whereDate('delivered_at', '>=', $request->date('date_from')))
             ->when($request->filled('date_to'), fn ($q) => $q->whereDate('delivered_at', '<=', $request->date('date_to')))
-            ->with(['order.items.product', 'order.address'])
+            ->with(['order.items.product', 'order.address', 'order.user'])
             ->orderByDesc('delivered_at')
             ->get();
 
@@ -71,7 +71,7 @@ class AssignmentController extends Controller
 
         return response()->json([
             'assignment' => new DeliveryAssignmentResource(
-                $assignment->load(['order.items.product', 'order.address'])
+                $assignment->load(['order.items.product', 'order.address', 'order.user'])
             ),
         ]);
     }

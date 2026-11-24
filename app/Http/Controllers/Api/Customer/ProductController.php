@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Api\Customer;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ProductResource;
+use App\Models\Category;
 use App\Models\Product;
 use App\Services\Catalog\ProductPricingService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
@@ -18,6 +20,13 @@ class ProductController extends Controller
      * resolves price/stock for that store; omit it for a price-only,
      * stock-blind catalog browse (e.g. before a store is chosen).
      */
+    public function categories(): JsonResponse
+    {
+        return response()->json([
+            'categories' => Category::where('is_active', true)->orderBy('name')->get(['id', 'name']),
+        ]);
+    }
+
     public function index(Request $request): AnonymousResourceCollection
     {
         $franchiseId = $request->integer('franchise_id') ?: null;

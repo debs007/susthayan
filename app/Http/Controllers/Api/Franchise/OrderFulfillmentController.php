@@ -27,7 +27,7 @@ class OrderFulfillmentController extends Controller
 
         $orders = Order::where('franchise_id', $franchiseId)
             ->whereNotIn('status', ['pending_payment'])
-            ->with(['items.product', 'franchise', 'user'])
+            ->with(['items.product', 'franchise', 'user', 'address'])
             ->latest()
             ->paginate(20);
 

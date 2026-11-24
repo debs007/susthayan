@@ -61,10 +61,16 @@
                             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($prescription->verification_status === 'rejected' && $prescription->rejection_reason): ?>
                                 <p class="mt-1 text-xs text-ink-muted"><?php echo e($prescription->rejection_reason); ?></p>
                             <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($prescription->verification_status === 'approved' && $prescription->medicines->isNotEmpty()): ?>
+                                <p class="mt-1 text-xs text-ink-muted"><?php echo e($prescription->medicines->pluck('medicine_name')->join(', ')); ?></p>
+                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </td>
                         <td class="px-5 py-3 text-xs text-ink-muted"><?php echo e($prescription->verifiedBy?->name ?? '—'); ?></td>
                         <td class="px-5 py-3 text-right">
                             <a href="<?php echo e(route('admin.prescriptions.show', $prescription)); ?>" target="_blank" class="text-xs font-medium text-primary-500 hover:text-primary-600">View file →</a>
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($prescription->verification_status === 'approved' && ! $prescription->order_id): ?>
+                                <a href="<?php echo e(route('admin.prescriptions.create-order', $prescription)); ?>" class="ml-3 text-xs font-medium text-success-600 hover:text-success-700">Create order →</a>
+                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </td>
                     </tr>
                 <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>

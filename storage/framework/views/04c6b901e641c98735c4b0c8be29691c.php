@@ -80,6 +80,8 @@
             }
         }
     </style>
+    <?php echo \Livewire\Mechanisms\FrontendAssets\FrontendAssets::styles(); ?>
+
 </head>
 <body class="h-full font-body text-[15px] text-ink" x-data="{ mobileNavOpen: false }">
     <div class="min-h-full lg:grid lg:grid-cols-[16rem_1fr]">
@@ -189,6 +191,8 @@
             </main>
         </div>
     </div>
+    <?php echo \Livewire\Mechanisms\FrontendAssets\FrontendAssets::scripts(); ?>
+
 </body>
 </html>
 <?php /**PATH /var/www/susthayan/susthayan/resources/views/components/layouts/app.blade.php ENDPATH**/ ?>

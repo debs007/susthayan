@@ -52,6 +52,7 @@ class OrderController extends Controller
 
         $order->load([
             'user:id,name,mobile',
+            'address',
             'items.product',
             'deliveryAssignments.deliveryAgent',
             'labTestBookings.labTest',

@@ -86,3 +86,45 @@
   2026-09-27 13:54:19 App\Jobs\DownloadProductImageJob ......... 898.48ms DONE
   2026-09-27 13:54:19 App\Jobs\DownloadProductImageJob ......... 835.09ms DONE
   2026-09-27 13:54:21 App\Jobs\DownloadProductImageJob ............... 2s DONE
+
+
+   RedisException 
+
+  Connection refused
+
+  at /var/www/susthayan/susthayan/vendor/laravel/framework/src/Illuminate/Redis/Connectors/PhpRedisConnector.php:187
+   RedisException 
+
+  Connection refused
+
+  at /var/www/susthayan/susthayan/vendor/laravel/framework/src/Illuminate/Redis/Connectors/PhpRedisConnector.php:187
+    183▕         if (version_compare(phpversion('redis'), '5.3.0', '>=') && ! is_null($context = Arr::get($config, 'context'))) {
+    184▕             $parameters[] = $this->normalizeContext($context);
+    185▕         }
+    186▕ 
+  ➜ 187▕         $client->{$persistent ? 'pconnect' : 'connect'}(...$parameters);
+    188▕     }
+    189▕ 
+    190▕     /**
+    191▕      * Create a new redis cluster instance.
+
+    183▕         if (version_compare(phpversion('redis'), '5.3.0', '>=') && ! is_null($context = Arr::get($config, 'context'))) {
+    184▕             $parameters[] = $this->normalizeContext($context);
+    185▕         }
+    186▕ 
+  ➜ 187▕         $client->{$persistent ? 'pconnect' : 'connect'}(...$parameters);
+    188▕     }
+    189▕ 
+    190▕     /**
+    191▕      * Create a new redis cluster instance.
+
+      [2m+29 vendor frames [22m
+      [2m+29 vendor frames [22m
+
+
+  30  /var/www/susthayan/susthayan/artisan:16
+      Illuminate\Foundation\Application::handleCommand()
+
+  30  /var/www/susthayan/susthayan/artisan:16
+      Illuminate\Foundation\Application::handleCommand()
+

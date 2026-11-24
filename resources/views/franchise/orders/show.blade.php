@@ -42,6 +42,22 @@
         <p class="whitespace-nowrap font-code text-base font-semibold">₹{{ number_format($order->total_amount, 2) }}</p>
     </div>
 
+    @if ($order->fulfillment_type->value === 'delivery' && $order->address)
+        <div class="mb-6 rounded-xl border border-border bg-canvas-raised p-5">
+            <h2 class="mb-2 font-display font-semibold">Delivery address</h2>
+            <p class="text-sm">
+                @if ($order->address->label)
+                    <span class="font-medium">{{ $order->address->label }}</span> &bull;
+                @endif
+                {{ $order->address->line1 }}
+                @if ($order->address->line2)
+                    , {{ $order->address->line2 }}
+                @endif
+            </p>
+            <p class="text-sm text-ink-muted">{{ $order->address->city }}, {{ $order->address->state }} &bull; {{ $order->address->pincode }}</p>
+        </div>
+    @endif
+
     @if ($order->order_type === 'lab_test' && $order->labTestBookings->isNotEmpty())
         <div class="mb-6 rounded-xl border border-border bg-canvas-raised p-5">
             <h2 class="mb-3 font-display font-semibold">Lab tests</h2>
